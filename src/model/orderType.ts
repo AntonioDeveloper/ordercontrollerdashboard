@@ -1,5 +1,6 @@
 export interface OrderType {
-  id: string;
+  _id: string;
+  cardId: string;
   nome_cliente: string;
   status_pedido:
     | 'Em preparação'

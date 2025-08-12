@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.ts"
+    "dev": "ts-node-dev --respawn --transpile-only --files server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -15,12 +17,12 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "mongoose": "^8.17.1",
-    "nodemon": "^3.1.10"
+    "mongoose": "^8.17.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0"
   }
 }

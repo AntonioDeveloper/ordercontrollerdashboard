@@ -11,7 +11,7 @@ interface OrderCardProps {
 export default function OrderCard ({order, isDragging} : OrderCardProps) {
 
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
-    id: order.id
+    id: order.cardId
   });
 
   const style = transform ? {
@@ -25,7 +25,7 @@ export default function OrderCard ({order, isDragging} : OrderCardProps) {
   return(
     <div ref={setNodeRef} {...listeners} {...attributes} style={style} className="cursor-grab w-8/10 min-h-24 bg-slate-100 flex items-center justify-center" >
       <div className="w-full h-auto">
-        <p>{order.id}</p>
+        <p>{order.cardId}</p>
         <p>{order.nome_cliente}</p>
         <p>{order.endereco}</p>
         <p>{order.status_pedido}</p>

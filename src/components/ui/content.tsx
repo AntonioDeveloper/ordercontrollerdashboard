@@ -1,14 +1,60 @@
 'use client'
 
 import Column from "./column";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { OrderType } from "../../model/orderType";
 import {ColumnType} from "../../model/columnType";
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent } from "@dnd-kit/core";
 import OrderCard from "./orderCard";
+import { responseCookiesToRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 export default function Content () {
+
+  const [allOrders, setAllOrders] = useState<OrderType[]>([]);
+  const [ordersBoard, setOrdersBoard] = useState<OrderType[]>(allOrders);
+  const [activeOrderId, setActiveOrderId] = useState<string>("");
+  const [orderStatus, setOrderStatus] = useState("");
   
+  useEffect(() => {
+    async function fetchData() {
+      // You can await here
+      const response = await fetch("http://127.0.0.1:3001/api/clients").then(res => res.json()).then(data => data)
+      console.log("Fetched data:", response);
+      
+      setAllOrders(response);      
+      setOrdersBoard(response);      
+    }
+    fetchData();
+  }, []); 
+
+  useEffect(() => {
+    console.log(`Mudei status ${orderStatus}, ID ${activeOrderId}`);
+
+    async function updateOrderStatus () {
+      try{
+        const response = await fetch(`http://127.0.0.1:3001/api/clients/update/${activeOrderId}`, {
+          method: "PUT",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            status_pedido: orderStatus
+          })
+        });
+
+        if(!response.ok) {
+          throw new Error("Falha em atualizar o pedido, tente novamente");
+        }
+      } catch (error) {
+        console.error("Erro em atualizar o pedido, tente novamente", error)
+      }
+    }
+
+    updateOrderStatus();
+  }, [orderStatus, activeOrderId]);
+
+  // console.log("SET ALL ORDERS", allOrders);
+
   const columns: ColumnType[] = [
     {id: "EM_PREPARACAO", title: "Em preparação"},    
     {id: "A_CAMINHO", title: "A caminho"},    
@@ -16,135 +62,13 @@ export default function Content () {
     {id: "CANCELADO", title: "Cancelado"},    
     {id: "PENDENTE", title: "Pendente"},    
   ];
-  
-  const initialOrders: OrderType[] = [
-    {
-      "id": "1",
-      "nome_cliente": "Ana Silva",
-      "status_pedido": "Em preparação",
-      "endereco": "Rua das Flores, 123, Santo André - SP",
-      "pedido": {
-        "pizza_sabor": "Calabresa",
-        "tamanho": "Grande",
-        "quantidade": 1,
-        "observacoes": "Sem cebola"
-      }
-    },
-    {
-      "id": "2",
-      "nome_cliente": "Bruno Santos",
-      "status_pedido": "A caminho",
-      "endereco": "Av. Brasil, 456, Santo André - SP",
-      "pedido": {
-        "pizza_sabor": "Frango com Catupiry",
-        "tamanho": "Média",
-        "quantidade": 1,
-        "observacoes": ""
-      }
-    },
-    {
-      "id": "3",
-      "nome_cliente": "Carla Oliveira",
-      "status_pedido": "Entregue",
-      "endereco": "Alameda dos Anjos, 789, Santo André - SP",
-      "pedido": {
-        "pizza_sabor": "Portuguesa",
-        "tamanho": "Grande",
-        "quantidade": 2,
-        "observacoes": "Uma com borda de cheddar"
-      }
-    },
-    {
-      "id": "4",
-      "nome_cliente": "Daniel Pereira",
-      "status_pedido": "Cancelado",
-      "endereco": "Rua da Paz, 101, Santo André - SP",
-      "pedido": {
-        "pizza_sabor": "Quatro Queijos",
-        "tamanho": "Pequena",
-        "quantidade": 1,
-        "observacoes": ""
-      }
-    },
-    {
-      "id": "5",
-      "nome_cliente": "Eduarda Costa",
-      "status_pedido": "Em preparação",
-      "endereco": "Travessa da Felicidade, 222, Santo André - SP",
-      "pedido": {
-        "pizza_sabor": "Marguerita",
-        "tamanho": "Grande",
-        "quantidade": 1,
-        "observacoes": "Extra manjericão"
-      }
-    },
-    {
-      "id": "6",
-      "nome_cliente": "Felipe Rodrigues",
-      "status_pedido": "A caminho",
-      "endereco": "Praça Central, 333, Santo André - SP",
-      "pedido": {
-        "pizza_sabor": "Calabresa",
-        "tamanho": "Média",
-        "quantidade": 1,
-        "observacoes": "Com borda de catupiry"
-      }
-    },
-    {
-      "id": "7",
-      "nome_cliente": "Gabriela Almeida",
-      "status_pedido": "Entregue",
-      "endereco": "Rua do Comércio, 444, Santo André - SP",
-      "pedido": {
-        "pizza_sabor": "Chocolate com Morango",
-        "tamanho": "Pequena",
-        "quantidade": 1,
-        "observacoes": "Para sobremesa"
-      }
-    },
-    {
-      "id": "8",
-      "nome_cliente": "Henrique Souza",
-      "status_pedido": "Em preparação",
-      "endereco": "Av. dos Bandeirantes, 555, Santo André - SP",
-      "pedido": {
-        "pizza_sabor": "Rúcula com Tomate Seco",
-        "tamanho": "Grande",
-        "quantidade": 1,
-        "observacoes": ""
-      }
-    },
-    {
-      "id": "9",
-      "nome_cliente": "Isabela Lima",
-      "status_pedido": "Pendente",
-      "endereco": "Rua do Limoeiro, 666, Santo André - SP",
-      "pedido": {
-        "pizza_sabor": "Atum",
-        "tamanho": "Média",
-        "quantidade": 1,
-        "observacoes": "Sem azeitona"
-      }
-    },
-    {
-      "id": "10",
-      "nome_cliente": "João Vitor",
-      "status_pedido": "A caminho",
-      "endereco": "Estrada Velha, 777, Santo André - SP",
-      "pedido": {
-        "pizza_sabor": "Bacon com Milho",
-        "tamanho": "Grande",
-        "quantidade": 1,
-        "observacoes": "Bem crocante"
-      }
-    }
-  ];
-  
-  const [orders, setOrders] = useState<OrderType[]>(initialOrders);
-  const [activeOrder, setActiveOrder] = useState<OrderType | null>(null);
+
+  const [activeOrder, setActiveOrder] = useState<OrderType | null>(null);  
 
   function handleDragStart(event: DragStartEvent) {
-    const order = orders.find((order) => order.id === event.active.id);
+    
+    const order = ordersBoard.find((order) => order.cardId === event.active.id);
+
     if (order) {
       setActiveOrder(order);
     }
@@ -162,9 +86,15 @@ export default function Content () {
 
     const newStatus = column.title as OrderType['status_pedido'];
 
-    setOrders((orders) =>
-      orders.map((order) => {
-        if (order.id === orderId) {
+    if (activeOrder?._id) {
+      setActiveOrderId(activeOrder._id);
+    }
+    
+    setOrderStatus(newStatus);
+
+    setOrdersBoard((ordersBoard) =>
+      ordersBoard.map((order) => {
+        if (order.cardId === orderId) {
           return { ...order, status_pedido: newStatus };
         }
         return order;
@@ -179,7 +109,7 @@ export default function Content () {
           return <Column 
           key={column.id} 
           column={column}
-          orders={orders.filter((order) => order.status_pedido === column.title)}
+          orders={ordersBoard.filter((order) => order.status_pedido === column.title)}
           activeOrder={activeOrder}
           />
         })}
