@@ -85,12 +85,13 @@ export default function Content () {
     if (!column) return;
 
     const newStatus = column.title as OrderType['status_pedido'];
+    const statusId = column.id; // Use the column ID for the API call
 
     if (activeOrder?._id) {
       setActiveOrderId(activeOrder._id);
     }
     
-    setOrderStatus(newStatus);
+    setOrderStatus(statusId); // Send the ID to the backend
 
     setOrdersBoard((ordersBoard) =>
       ordersBoard.map((order) => {
