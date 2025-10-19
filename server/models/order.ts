@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const ClientSchema = new mongoose.Schema({
+const OrderSchema = new mongoose.Schema({
   id: { type: String, required: true },
   cardId: { type: String, required: true },
   nome_cliente: { type: String, required: true },
@@ -12,6 +12,6 @@ const ClientSchema = new mongoose.Schema({
     quantidade: Number,
     observacoes: String,
   },
-});
+}, { collection: 'clients' });
 
-export default mongoose.model('Client', ClientSchema);
+export default mongoose.model('Order', OrderSchema);

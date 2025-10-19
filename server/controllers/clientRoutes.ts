@@ -1,9 +1,9 @@
 import express from 'express';
-import { getAllClients, updateOrder } from './clientController';
+import { getAllOrders, updateOrder } from './clientController';
 
 const route = express.Router();
 
-route.get('/clients', getAllClients);
-route.put('/clients/update/:id', updateOrder);
+route.get('/orders', getAllOrders);
+route.put('/orders/update/:id', updateOrder);
 
 export default route;
