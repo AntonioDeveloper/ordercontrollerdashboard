@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import route from './controllers/clientRoutes';
+import route from './controllers/orderRoutes';
 // import routes from './routes/routes';
 
 dotenv.config();
