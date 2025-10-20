@@ -4,6 +4,7 @@ import "./globals.css";
 import Menu from "@/components/ui/menu";
 import Content from "@/components/ui/content";
 import Footer from "@/components/ui/footer";
+import { OrdersProvider } from "@/context/context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,19 +23,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <main className="w-screen h-dvh bg-slate-800 flex">
-          <Menu />
-          <div className="flex-1 h-screen flex flex-col justify-between">
-            <Content>{children}</Content>
-            <Footer />
-          </div>
-        </main>
+        <OrdersProvider>
+          <main className="w-screen h-dvh bg-slate-800 flex">
+            <Menu />
+            <div className="flex-1 h-screen flex flex-col justify-between">
+              <Content>{children}</Content>
+              <Footer />
+            </div>
+          </main>
+        </OrdersProvider>
       </body>
     </html>
   );
