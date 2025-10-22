@@ -50,47 +50,49 @@ export const getAllClients = async (req: any, res: any) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-// export const updateOrder = async (req: any, res: any) => {
-//   console.log('=== updateOrder function invoked ===');
-//   console.log('Request body:', req.body);
-//   console.log('Request params:', req.params);
+export const updateClient = async (req: any, res: any) => {
+  console.log('=== updateClient function invoked ===');
+  console.log('Request body:', req.body);
+  console.log('Request params:', req.params);
 
-//   try {
-//     const id = req.params.id;
+  try {
+    const id = req.params.id;
 
-//     // Validate MongoDB ID format
-//     if (!mongoose.Types.ObjectId.isValid(id)) {
-//       return res.status(400).json({ errorMessage: 'Invalid ID format' });
-//     }
-//     // Validate request body
-//     if (!req.body || Object.keys(req.body).length === 0) {
-//       return res.status(400).json({ errorMessage: 'Update data is required' });
-//     }
-//     const clientId = await ClientSchema.findById(id);
-//     console.log('ID:', id);
-//     console.log('Found client:', clientId);
+    // Validate MongoDB ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ errorMessage: 'Invalid ID format' });
+    }
+    // Validate request body
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ errorMessage: 'Update data is required' });
+    }
+    const clientId = await ClientSchema.findById(id);
+    console.log('ID:', id);
+    console.log('Found client:', clientId);
 
-//     if (!clientId) {
-//       console.log('Client not found for ID:', id);
-//       return res.status(404).json({ errorMessage: 'Cliente não encontrado' });
-//     }
-//     const updatedData = await ClientSchema.findByIdAndUpdate(
-//       id,
-//       {
-//         $set: {
-//           status_pedido: req.body.status_pedido,
-//         },
-//       },
-//       {
-//         new: true,
-//         runValidators: true,
-//         context: 'query',
-//       }
-//     );
-//     console.log('UpdatedData', updatedData);
-//     res.status(200).json(updatedData);
-//   } catch (error) {
-//     console.error('Error in updateOrder:', error);
-//     res.status(500).json({ errorMessage: error });
-//   }
-// };
+    if (!clientId) {
+      console.log('Client not found for ID:', id);
+      return res.status(404).json({ errorMessage: 'Cliente não encontrado' });
+    }
+    const updatedData = await ClientSchema.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          nome_cliente: req.body.clientData.nome_cliente,
+          endereco: req.body.clientData.endereco,
+          telefone: req.body.clientData.telefone,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+        context: 'query',
+      }
+    );
+    console.log('UpdatedData', updatedData);
+    res.status(200).json(updatedData);
+  } catch (error) {
+    console.error('Error in updateOrder:', error);
+    res.status(500).json({ errorMessage: error });
+  }
+};

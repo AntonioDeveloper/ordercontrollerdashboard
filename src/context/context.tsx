@@ -20,6 +20,7 @@ type OrdersContextValue = {
   updateOrderStatus: (id: string, status: string) => Promise<void>;
   moveOrder: (orderId: string, columnId: string) => void;
   allClients: ClientType[];
+  updateClientData: (id: string, clientData: ClientType) => Promise<void>;
 };
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
@@ -94,6 +95,28 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateClientData = async (id: string, clientData: ClientType) => {
+    console.log("Client Data CTX", clientData);
+    try {
+      const response = await fetch(`http://127.0.0.1:3001/api/clients/update/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientData }),
+      });
+      if (!response.ok) {
+        console.error('[OrdersProvider] PUT /api/clients/update failed', response.status, response.statusText);
+        return;
+      }
+      const updated = await response.json();
+      console.log("updated", updated);
+      setAllClients(prev => prev.map(c => c._id === updated._id ? { ...c, ...updated } : c));
+      // setOrdersBoard(prev => prev.map(o => o._id === updated._id ? { ...o, status_pedido: updated.status_pedido } : o));
+      // setAllOrders(prev => prev.map(o => o._id === updated._id ? { ...o, status_pedido: updated.status_pedido } : o));
+    } catch (e) {
+      console.error('[OrdersProvider] PUT /api/orders/update error', e);
+    }
+  };
+
   const moveOrder = (orderId: string, columnId: string) => {
     const column = columns.find(c => c.id === columnId);
     if (!column) return;
@@ -136,6 +159,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     updateOrderStatus,
     moveOrder,
     allClients,
+    updateClientData,
   };
 
   return (
