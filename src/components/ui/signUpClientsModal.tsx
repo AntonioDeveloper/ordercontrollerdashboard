@@ -31,7 +31,7 @@ export default function SignUpClientsModal({ open, onClose, children }: SignUpCl
         aria-modal="true"
         className="relative bg-white rounded p-4 shadow-lg w-[90vw] max-w-md"
       >
-        <button className="absolute top-2 right-2" onClick={onClose}>Fechar</button>
+        <button className="absolute top-2 right-2 cursor-pointer" onClick={onClose}>Fechar</button>
         {children}
       </div>
     </div>

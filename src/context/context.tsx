@@ -28,8 +28,7 @@ type OrdersContextValue = {
   getPathName: () => void;
   currentPath: string;
   menuPage: boolean;
-  
-  
+  signUpClient: (clientData: Omit<ClientType, '_id'>) => Promise<void>;
 };
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
@@ -70,7 +69,6 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  
   const fetchClients = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/clients');
@@ -132,7 +130,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       });
     }
   }
-  
+
   const updateOrderStatus = async (id: string, status: string) => {
     try {
       const response = await fetch(`http://127.0.0.1:3001/api/orders/update/${id}`, {
@@ -165,12 +163,29 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         return;
       }
       const updated = await response.json();
-      console.log("updated", updated);
-      setAllClients(prev => prev.map(c => c._id === updated._id ? { ...c, ...updated } : c));
-      // setOrdersBoard(prev => prev.map(o => o._id === updated._id ? { ...o, status_pedido: updated.status_pedido } : o));
-      // setAllOrders(prev => prev.map(o => o._id === updated._id ? { ...o, status_pedido: updated.status_pedido } : o));
+      setAllClients(prev => prev.map(c => c._id === updated._id ? { ...c, ...updated } : c));      
     } catch (e) {
       console.error('[OrdersProvider] PUT /api/orders/update error', e);
+    }
+  };
+
+  const signUpClient = async (clientData: Omit<ClientType, '_id'>) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/signUpClient', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientData }),
+      });
+
+      console.log("response", response);
+      if (!response.ok) {
+        console.error('[OrdersProvider] POST /api/clients failed', response.status, response.statusText);
+        return;
+      }
+      const newClient = await response.json();
+      setAllClients(prev => [...prev, newClient]);
+    } catch (e) {
+      console.error('[OrdersProvider] POST /api/signUpClient error', e);
     }
   };
 
@@ -222,7 +237,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     currentPath,
     menuPage,
     fetchMenuItems,
-    allMenuItems
+    allMenuItems,
+    signUpClient
   };
 
   return (

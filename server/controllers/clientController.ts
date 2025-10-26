@@ -96,3 +96,23 @@ export const updateClient = async (req: any, res: any) => {
     res.status(500).json({ errorMessage: error });
   }
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const signUpClient = async (req: any, res: any) => {
+  console.log('=== signUpClient function invoked ===');
+  console.log('Request body:', req.body);
+  console.log('Request params:', req.params);
+
+  try {
+    const newClient = new ClientSchema({
+      nome_cliente: req.body.clientData.nome_cliente,
+      endereco: req.body.clientData.endereco,
+      telefone: req.body.clientData.telefone,
+    });
+    await newClient.save();
+    res.status(201).json(newClient);
+  } catch (error) {
+    console.error('Error in signUpClient:', error);
+    res.status(500).json({ errorMessage: error });
+  }
+};

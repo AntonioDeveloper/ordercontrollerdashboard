@@ -17,7 +17,6 @@ export default function ClientRow({ clients }: ClientRowProps) {
     nome_cliente: "",
     endereco: "",
     telefone: "",
-    email: "",
   });
 
   const { updateClientData } = useOrders();
@@ -29,7 +28,6 @@ export default function ClientRow({ clients }: ClientRowProps) {
       nome_cliente: (document.querySelector(`input[name="nome_cliente"]`) as HTMLInputElement)?.value || "",
       endereco: (document.querySelector(`input[name="endereco"]`) as HTMLInputElement)?.value || "",
       telefone: (document.querySelector(`input[name="telefone"]`) as HTMLInputElement)?.value || "",
-      email: (document.querySelector(`input[name="email"]`) as HTMLInputElement)?.value || "",
     });
   };
 
@@ -43,7 +41,7 @@ export default function ClientRow({ clients }: ClientRowProps) {
     }
     runUpdateClient();
     console.log("newData", newData);
-  }, [updateClientData, newData]);
+  }, [newData]);
 
   return (
     <>
@@ -87,17 +85,6 @@ export default function ClientRow({ clients }: ClientRowProps) {
               ) : (
                 client.telefone
               )}</td>
-            <td className="w-1/12 border border-gray-300 px-4 py-2">{isEditing ? (
-                <input
-                  name="email"
-                  type="text"
-                  placeholder="Digite o email do cliente"
-                  onChange={(e) => setEditingName(e.target.value)}
-                  className="w-full border px-2 py-1 rounded"
-                />
-              ) : (
-                client.email
-              )}</td>
             <td className="w-1/12 border border-gray-300 px-4 py-2">
               <button
                 className="cursor-pointer bg-[#ec4913] text-white px-3 py-1 rounded"
@@ -109,7 +96,6 @@ export default function ClientRow({ clients }: ClientRowProps) {
                     // Inicia edição desta linha com o nome atual
                     setEditingId(client._id);
                     setEditingName(client.nome_cliente);
-                    
                   }
                 }}
               >

@@ -7,8 +7,20 @@ import { useState } from "react";
 
 export default function Home() {
 
-  const { allClients } = useOrders();
-  const [isOpen, setIsOpen] = useState(false)
+  const { allClients, signUpClient } = useOrders();
+  const [isOpen, setIsOpen] = useState(false);
+  const [nome, setNome] = useState('');
+  const [endereco, setEndereco] = useState('');
+  const [telefone, setTelefone] = useState('');
+
+  const handleSubmit = () => {
+    const payload = {
+      nome_cliente: nome,
+      endereco: endereco,
+      telefone: telefone,
+    }
+    signUpClient(payload);
+  }
 
   return (
     <div className="w-full px-4 py-4">
@@ -25,7 +37,6 @@ export default function Home() {
             <th className="w-1/12 border border-gray-300 px-4 py-2">Nome</th>
             <th className="w-1/12 border border-gray-300 px-4 py-2">Endereço</th>
             <th className="w-1/12 border border-gray-300 px-4 py-2">Telefone</th>
-            <th className="w-1/12 border border-gray-300 px-4 py-2">Email</th>
             <th className="w-1/12 border border-gray-300 px-4 py-2">Ações</th>
           </tr>
         </thead>
@@ -35,12 +46,11 @@ export default function Home() {
       </table>
       
       <SignUpClientsModal open={isOpen} onClose={() => setIsOpen(false)}>
-        <h1 className="text-2xl font-bold">Cadastrar Novo Clientes</h1>
-        <form className="w-full flex flex-col items-center gap-4">
-          <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Nome" />
-          <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Endereço" />
-          <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Telefone" />
-          <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="email" placeholder="Email" />
+        <h1 className="text-2xl font-bold">Cadastrar Novo Cliente</h1>
+        <form className="w-full flex flex-col items-center gap-4" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+          <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Nome" onChange={(e) => setNome(e.target.value)} />
+          <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Endereço" onChange={(e) => setEndereco(e.target.value)} />
+          <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Telefone" onChange={(e) => setTelefone(e.target.value)} />
           <button className="w-full h-12 bg-[#ec4913] text-white px-4 py-2 rounded-md cursor-pointer" type="submit">Cadastrar</button>
         </form>
       </SignUpClientsModal>

@@ -2,10 +2,9 @@ import mongoose from 'mongoose';
 
 const ClientSchema = new mongoose.Schema(
   {
-    id: { type: String, required: true },
     nome_cliente: { type: String, required: true },
-    endereco: String,
-    telefone: String,
+    endereco: { type: String, required: true, trim: true },
+    telefone: { type: String, required: true, trim: true },
   },
   { collection: 'clientsData' }
 );
