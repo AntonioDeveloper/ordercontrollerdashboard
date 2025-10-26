@@ -30,7 +30,7 @@ export default function RootLayout({
         <OrdersProvider>
           <main className="w-screen h-dvh bg-slate-800 flex">
             <Menu />
-            <div className="flex-1 h-screen flex flex-col justify-between">
+            <div className="w-5/6 h-screen flex flex-col justify-between">
               <Content>{children}</Content>
               <Footer />
             </div>

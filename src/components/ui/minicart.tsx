@@ -1,0 +1,30 @@
+import { MinicartItem } from "@/model/minicart";
+
+interface MinicartProps {
+  items?: MinicartItem[];
+  setItems?: (items: MinicartItem[]) => void;
+}
+
+export default function Minicart ({ items = [], setItems }: MinicartProps) {
+    console.log("cartItems", items);
+  return (
+    <div className="w-1/3 h-full flex flex-col items-center gap-0.5">
+      <h2 className="text-zinc-600 text-2xl font-bold text-center">Resumo do pedido</h2>
+
+      <ul className="w-full h-auto flex flex-col items-center gap-0.5">
+        {items.map(item => (
+          <li key={item.nome_item} className="w-full h-12 flex items-center justify-between px-2 bg-zinc-100 rounded-[8px]">
+            <p className="text-zinc-600 text-sm font-bold">{item.nome_item}</p>
+            <button className="w-8 h-8 text-center text-zinc-600 text-sm font-bold" onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item && i.quantidade > 0 ? { ...i, quantidade: i.quantidade - 1 } : i))}>
+              -
+            </button>
+            <input className="w-8 h-8 text-center text-zinc-600 text-sm font-bold" type="number" value={item.quantidade} />
+            <button className="w-8 h-8 text-center text-zinc-600 text-sm font-bold" onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item ? { ...i, quantidade: i.quantidade + 1 } : i))}>
+              +
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

@@ -9,7 +9,7 @@ export default function Home() {
   // console.log("allClients", allClients);
 
   return (
-    <div className="px-4 py-4">
+    <div className="w-full px-4 py-4">
       <h1 className="text-2xl font-bold">Clientes</h1>
 
       <table className="w-full border border-gray-300">

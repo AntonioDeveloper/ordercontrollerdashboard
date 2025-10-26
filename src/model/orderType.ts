@@ -11,8 +11,8 @@ export interface OrderType {
   endereco: string;
   pedido: {
     pizza_sabor: string;
-    tamanho: 'Grande' | 'Média' | 'Pequena';
+    tamanho?: 'Grande' | 'Média' | 'Pequena';
     quantidade: number;
-    observacoes: string;
+    observacoes?: string;
   };
 }
