@@ -5,10 +5,16 @@ import { OrderType } from '@/model/orderType';
 import { ColumnType } from '@/model/columnType';
 import { ClientType } from '@/model/clientType';
 import { usePathname } from 'next/navigation';
+import { Root } from '@/model/menu';
 
 type OrdersContextValue = {
   allOrders: OrderType[];
   ordersBoard: OrderType[];
+  allMenuItems: Root;
+  // salty_pizzas: Root['salty_pizzas'];
+  // sweet_pizzas: Root['sweet_pizzas'];
+  // vegetarian_pizzas: Root['vegetarian_pizzas'];
+  // beverages: Root['beverages'];
   setOrdersBoard: React.Dispatch<React.SetStateAction<OrderType[]>>;
   columns: ColumnType[];
   activeOrder: OrderType | null;
@@ -18,6 +24,7 @@ type OrdersContextValue = {
   orderStatus: string;
   setOrderStatus: React.Dispatch<React.SetStateAction<string>>;
   fetchOrders: () => Promise<void>;
+  fetchMenuItems: () => Promise<void>;
   updateOrderStatus: (id: string, status: string) => Promise<void>;
   moveOrder: (orderId: string, columnId: string) => void;
   allClients: ClientType[];
@@ -25,12 +32,20 @@ type OrdersContextValue = {
   getPathName: () => void;
   currentPath: string;
   menuPage: boolean;
+  
+  
 };
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
 
 export function OrdersProvider({ children }: { children: ReactNode }) {
   const [allOrders, setAllOrders] = useState<OrderType[]>([]);
+  const [allMenuItems, setAllMenuItems] = useState<Root>({
+    salty_pizzas: [],
+    sweet_pizzas: [],
+    vegetarian_pizzas: [],
+    beverages: [],
+  });
   const [ordersBoard, setOrdersBoard] = useState<OrderType[]>([]);
   const [activeOrder, setActiveOrder] = useState<OrderType | null>(null);
   const [activeOrderId, setActiveOrderId] = useState<string>('');
@@ -94,6 +109,33 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const fetchMenuItems = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:3001/api/menu');
+      
+      if (!response.ok) {
+        console.error('[OrdersProvider] GET /api/menu failed', response.status, response.statusText);
+        setAllMenuItems({
+          salty_pizzas: [],
+          sweet_pizzas: [],
+          vegetarian_pizzas: [],
+          beverages: [],
+        });
+        return;
+      }
+      const data: Root = await response.json();      
+      setAllMenuItems(data);
+    } catch (e) {
+      console.error('[OrdersProvider] GET /api/menu error', e);
+      setAllMenuItems({
+        salty_pizzas: [],
+        sweet_pizzas: [],
+        vegetarian_pizzas: [],
+        beverages: [],
+      });
+    }
+  }
+  
   const updateOrderStatus = async (id: string, status: string) => {
     try {
       const response = await fetch(`http://127.0.0.1:3001/api/orders/update/${id}`, {
@@ -154,6 +196,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     fetchClients();
     fetchOrders();
+    fetchMenuItems();
   }, []);
 
   useEffect(() => {
@@ -181,6 +224,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     getPathName,
     currentPath,
     menuPage,
+    fetchMenuItems,
+    allMenuItems
   };
 
   return (

@@ -41,7 +41,7 @@ export default function Menu () {
         (
           <ul className="w-full mt-5 px-5 py-2">
                 <li className="py-1.5">
-                  <Link href="#" className="w-full flex items-center text-white">
+                  <Link href="/saltyPizzasPage" className="w-full flex items-center text-white">
                     <IconUser stroke={2} className="mr-2" />
                     Pizza Salgada
                   </Link>

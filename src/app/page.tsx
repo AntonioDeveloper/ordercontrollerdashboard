@@ -6,7 +6,7 @@ import { useOrders } from "@/context/context";
 export default function Home() {
 
   const { allClients } = useOrders();
-  console.log("allClients", allClients);
+  // console.log("allClients", allClients);
 
   return (
     <div className="px-4 py-4">
