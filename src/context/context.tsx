@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState, ReactNo
 import { OrderType } from '@/model/orderType';
 import { ColumnType } from '@/model/columnType';
 import { ClientType } from '@/model/clientType';
+import { usePathname } from 'next/navigation';
 
 type OrdersContextValue = {
   allOrders: OrderType[];
@@ -21,6 +22,9 @@ type OrdersContextValue = {
   moveOrder: (orderId: string, columnId: string) => void;
   allClients: ClientType[];
   updateClientData: (id: string, clientData: ClientType) => Promise<void>;
+  getPathName: () => void;
+  currentPath: string;
+  menuPage: boolean;
 };
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
@@ -32,6 +36,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   const [activeOrderId, setActiveOrderId] = useState<string>('');
   const [orderStatus, setOrderStatus] = useState<string>('');
   const [allClients, setAllClients] = useState<ClientType[]>([]);
+  const [currentPath, setCurrentPath] = useState('');
+  const pathname = usePathname();
+
+  const [menuPage, setMenuPage] = useState(false);
 
   const columns: ColumnType[] = useMemo(() => [
     { id: 'EM_PREPARACAO', title: 'Em preparação' },
@@ -40,6 +48,16 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     { id: 'CANCELADO', title: 'Cancelado' },
     { id: 'PENDENTE', title: 'Pendente' },
   ], []);
+
+  const getPathName = () => {
+    if (pathname === '/menuPage') {
+      setMenuPage(true);
+      setCurrentPath(pathname);
+    } else {
+      setMenuPage(false);
+      setCurrentPath(pathname);
+    }
+  }
 
   const fetchClients = async () => {
     try {
@@ -160,6 +178,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     moveOrder,
     allClients,
     updateClientData,
+    getPathName,
+    currentPath,
+    menuPage,
   };
 
   return (

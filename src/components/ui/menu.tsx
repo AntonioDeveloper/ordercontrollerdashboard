@@ -1,23 +1,18 @@
 'use client'
 
+import { useOrders } from "@/context/context";
 import { IconPizza, IconUser } from "@tabler/icons-react";
 import Link from "next/link";
-import {useEffect, useState} from 'react';
-import { usePathname } from "next/navigation";
+import {useEffect} from 'react';
+
 
 export default function Menu () {
 
-  const pathname = usePathname();
-
-  const [menuPage, setMenuPage] = useState(false);
+ const {getPathName, menuPage} = useOrders();
 
   useEffect(() => {
-    if (pathname === '/menuPage') {
-      setMenuPage(true);
-    } else {
-      setMenuPage(false);
-    }
-  }, [pathname]);
+    getPathName();
+  }, [getPathName, menuPage]);
 
   return (
     <aside className="basis-1/6 flex-none h-dvh flex flex-col relative bg-slate-900">
