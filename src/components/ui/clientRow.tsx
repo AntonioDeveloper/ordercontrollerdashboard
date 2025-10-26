@@ -33,16 +33,17 @@ export default function ClientRow({ clients }: ClientRowProps) {
     });
   };
 
-    
+  
   useEffect(() => {
     async function runUpdateClient () {
+      if (!newData._id) return;
       await updateClientData(newData._id, newData);
       setEditingId(null);
       setEditingName("");
     }
     runUpdateClient();
     console.log("newData", newData);
-  }, [newData]);
+  }, [updateClientData, newData]);
 
   return (
     <>
@@ -99,7 +100,7 @@ export default function ClientRow({ clients }: ClientRowProps) {
               )}</td>
             <td className="w-1/12 border border-gray-300 px-4 py-2">
               <button
-                className="cursor-pointer bg-blue-600 text-white px-3 py-1 rounded"
+                className="cursor-pointer bg-[#ec4913] text-white px-3 py-1 rounded"
                 onClick={() => {
                   if (isEditing) {
                     // Finaliza edição desta linha

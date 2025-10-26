@@ -14,8 +14,6 @@ export default function Menu () {
     getPathName();
   }, [getPathName, menuPage]);
 
-  // basis-1/6
-
   return (
     <aside className="w-1/6 h-dvh flex flex-col relative bg-slate-900">
       <h1 className="px-5 py-2 text-2xl font-bold text-white">Pizza Dash Menu</h1>

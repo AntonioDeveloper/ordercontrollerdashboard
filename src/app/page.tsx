@@ -1,16 +1,22 @@
 'use client'
 
 import ClientRow from "@/components/ui/clientRow";
+import SignUpClientsModal from "@/components/ui/signUpClientsModal";
 import { useOrders } from "@/context/context";
+import { useState } from "react";
 
 export default function Home() {
 
   const { allClients } = useOrders();
-  // console.log("allClients", allClients);
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="w-full px-4 py-4">
-      <h1 className="text-2xl font-bold">Clientes</h1>
+
+      <div className="flex justify-between items-center mb-4.5">
+        <h1 className="text-2xl font-bold">Clientes</h1>
+        <button className="bg-[#ec4913] text-white px-4 py-2 rounded-md cursor-pointer" onClick={() => setIsOpen(true)} >Adicionar Cliente</button>
+      </div>
 
       <table className="w-full border border-gray-300">
         <thead>
@@ -28,7 +34,16 @@ export default function Home() {
         </tbody>
       </table>
       
-
+      <SignUpClientsModal open={isOpen} onClose={() => setIsOpen(false)}>
+        <h1 className="text-2xl font-bold">Cadastrar Novo Clientes</h1>
+        <form className="w-full flex flex-col items-center gap-4">
+          <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Nome" />
+          <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Endereço" />
+          <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Telefone" />
+          <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="email" placeholder="Email" />
+          <button className="w-full h-12 bg-[#ec4913] text-white px-4 py-2 rounded-md cursor-pointer" type="submit">Cadastrar</button>
+        </form>
+      </SignUpClientsModal>
     </div>
   );
 }

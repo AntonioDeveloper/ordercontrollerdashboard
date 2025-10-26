@@ -15,11 +15,12 @@ export default function Minicart ({ items = [], setItems }: MinicartProps) {
         {items.map(item => (
           <li key={item.nome_item} className="w-full h-12 flex items-center justify-between px-2 bg-zinc-100 rounded-[8px]">
             <p className="text-zinc-600 text-sm font-bold">{item.nome_item}</p>
-            <button className="w-8 h-8 text-center text-zinc-600 text-sm font-bold" onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item && i.quantidade > 0 ? { ...i, quantidade: i.quantidade - 1 } : i))}>
+            <button className="w-8 h-8 text-center text-zinc-600 text-sm font-bold cursor-pointer" onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item && i.quantidade > 0 ? { ...i, quantidade: i.quantidade - 1 } : i))}>
               -
             </button>
-            <input className="w-8 h-8 text-center text-zinc-600 text-sm font-bold" type="number" value={item.quantidade} />
-            <button className="w-8 h-8 text-center text-zinc-600 text-sm font-bold" onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item ? { ...i, quantidade: i.quantidade + 1 } : i))}>
+            <input className="w-8 h-8 text-center text-zinc-600 text-sm font-bold" type="text" inputMode="numeric"
+            pattern="[0-9]*" value={item.quantidade} />
+            <button className="w-8 h-8 text-center text-zinc-600 text-sm font-bold cursor-pointer" onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item ? { ...i, quantidade: i.quantidade + 1 } : i))}>
               +
             </button>
           </li>

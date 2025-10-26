@@ -11,10 +11,6 @@ type OrdersContextValue = {
   allOrders: OrderType[];
   ordersBoard: OrderType[];
   allMenuItems: Root;
-  // salty_pizzas: Root['salty_pizzas'];
-  // sweet_pizzas: Root['sweet_pizzas'];
-  // vegetarian_pizzas: Root['vegetarian_pizzas'];
-  // beverages: Root['beverages'];
   setOrdersBoard: React.Dispatch<React.SetStateAction<OrderType[]>>;
   columns: ColumnType[];
   activeOrder: OrderType | null;
@@ -65,7 +61,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   ], []);
 
   const getPathName = () => {
-    if (pathname === '/menuPage') {
+    if (pathname === '/menuPage' || pathname === '/saltyPizzasPage' || pathname === '/sweetPizzasPage' || pathname === '/vegetarianPizzasPage' || pathname === '/beveragesPage') {
       setMenuPage(true);
       setCurrentPath(pathname);
     } else {
@@ -74,6 +70,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  
   const fetchClients = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/clients');
