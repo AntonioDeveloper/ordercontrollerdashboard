@@ -94,3 +94,30 @@ export const updateOrder = async (req: any, res: any) => {
     res.status(500).json({ errorMessage: error });
   }
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createOrder = async (req: any, res: any) => {
+  console.log('=== createOrder function invoked ===');
+  console.log('Request body:', req.body);
+  console.log('Request params:', req.params);
+
+  try {
+    const newOrder = new OrderSchema({
+      cardId: req.body.cardId,
+      nome_cliente: req.body.nome_cliente,
+      status_pedido: req.body.status_pedido,
+      endereco: req.body.endereco,
+      pedido: {
+        pizza_sabor: req.body.pedido.pizza_sabor,
+        tamanho: req.body.pedido.tamanho,
+        quantidade: req.body.pedido.quantidade,
+        observacoes: req.body.pedido.observacoes,
+      },
+    });
+    await newOrder.save();
+    res.status(201).json(newOrder);
+  } catch (error) {
+    console.error('Error in createOrder:', error);
+    res.status(500).json({ errorMessage: error });
+  }
+};

@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 
 const OrderSchema = new mongoose.Schema(
   {
-    id: { type: String, required: true },
     cardId: { type: String, required: true },
     nome_cliente: { type: String, required: true },
     status_pedido: { type: String, required: true },
