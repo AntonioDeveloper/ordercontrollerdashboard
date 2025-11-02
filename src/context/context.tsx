@@ -6,6 +6,7 @@ import { ColumnType } from '@/model/columnType';
 import { ClientType } from '@/model/clientType';
 import { usePathname } from 'next/navigation';
 import { Root } from '@/model/menu';
+import { MinicartItem } from '@/model/minicart';
 
 type OrdersContextValue = {
   allOrders: OrderType[];
@@ -29,6 +30,14 @@ type OrdersContextValue = {
   currentPath: string;
   menuPage: boolean;
   signUpClient: (clientData: Omit<ClientType, '_id'>) => Promise<void>;
+  // Minicart state and API
+  cartItems: MinicartItem[];
+  setCartItems: React.Dispatch<React.SetStateAction<MinicartItem[]>>;
+  addToCart: (item: MinicartItem) => void;
+  updateCartItemQuantity: (nome_item: string, delta: number) => void;
+  removeCartItem: (nome_item: string) => void;
+  clearCart: () => void;
+  getCartTotal: () => number;
 };
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
@@ -50,6 +59,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   const [menuPage, setMenuPage] = useState(false);
+
+  // Minicart state
+  const [cartItems, setCartItems] = useState<MinicartItem[]>([]);
+  console.log('cartItems', cartItems);
 
   const columns: ColumnType[] = useMemo(() => [
     { id: 'EM_PREPARACAO', title: 'Em preparação' },
@@ -189,6 +202,32 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Minicart API implementations
+  const addToCart = (item: MinicartItem) => {
+    setCartItems(prev => {
+      const existing = prev.find(i => i.nome_item === item.nome_item);
+      if (existing) {
+        return prev.map(i => i.nome_item === item.nome_item ? { ...i, quantidade: i.quantidade + (item.quantidade || 1), preco: item.preco ?? i.preco } : i);
+      }
+      return [...prev, { ...item, quantidade: item.quantidade || 1 }];
+    });
+  };
+
+  const updateCartItemQuantity = (nome_item: string, delta: number) => {
+    setCartItems(prev => prev
+      .map(i => i.nome_item === nome_item ? { ...i, quantidade: Math.max(0, i.quantidade + delta) } : i)
+      .filter(i => i.quantidade > 0)
+    );
+  };
+
+  const removeCartItem = (nome_item: string) => {
+    setCartItems(prev => prev.filter(i => i.nome_item !== nome_item));
+  };
+
+  const clearCart = () => setCartItems([]);
+
+  const getCartTotal = () => cartItems.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
+
   const moveOrder = (orderId: string, columnId: string) => {
     const column = columns.find(c => c.id === columnId);
     if (!column) return;
@@ -238,7 +277,14 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     menuPage,
     fetchMenuItems,
     allMenuItems,
-    signUpClient
+    signUpClient,
+    cartItems,
+    setCartItems,
+    addToCart,
+    updateCartItemQuantity,
+    removeCartItem,
+    clearCart,
+    getCartTotal,
   };
 
   return (

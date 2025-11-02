@@ -3,13 +3,10 @@
 import Minicart from "@/components/ui/minicart";
 import { useOrders } from "@/context/context";
 import Image from 'next/image';
-import {useState} from 'react';
-import { MinicartItem } from '@/model/minicart';
 
 export default function BeveragesPage() {
-  const { allMenuItems } = useOrders();
+  const { allMenuItems, cartItems, setCartItems } = useOrders();
   const { beverages } = allMenuItems;
-  const [cartItems, setCartItems] = useState<MinicartItem[]>([]);
 
   return (
     <>
@@ -23,7 +20,7 @@ export default function BeveragesPage() {
                 <Image src="/img/generic-beverage.png" alt={beverage.nome} width={200} height={150} className="w-1/2 h-1/2 object-cover rounded-[8px]" />
                 <p className="text-zinc-600 text-sm text-center">{beverage.ingredientes_principais.join(", ")}</p>
                 <p className="text-zinc-600 text-sm text-center">R$ {beverage.preco.toFixed(2)}</p>
-                <button className="w-3x py-1 px-1 bg-[#ec4913] text-white text-sm font-bold rounded-[8px] cursor-pointer" onClick={() => setCartItems([...cartItems, {nome_item: beverage.nome, quantidade: 1}])}>Adicionar ao pedido</button>
+                <button className="w-3x py-1 px-1 bg-[#ec4913] text-white text-sm font-bold rounded-[8px] cursor-pointer" onClick={() => setCartItems([...cartItems, {nome_item: beverage.nome, quantidade: 1, preco: beverage.preco}])}>Adicionar ao pedido</button>
               </div>
             ))
           }

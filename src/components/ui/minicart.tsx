@@ -6,7 +6,7 @@ interface MinicartProps {
 }
 
 export default function Minicart ({ items = [], setItems }: MinicartProps) {
-    console.log("cartItems", items);
+
   return (
     <div className="w-1/3 h-full flex flex-col items-center gap-0.5">
       <h2 className="text-zinc-600 text-2xl font-bold text-center">Resumo do pedido</h2>

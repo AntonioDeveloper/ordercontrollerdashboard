@@ -3,13 +3,10 @@
 import Minicart from "@/components/ui/minicart";
 import { useOrders } from "@/context/context";
 import Image from 'next/image';
-import {useState} from 'react';
-import { MinicartItem } from '@/model/minicart';
 
 export default function SaltyPizzasPage() {
-  const { allMenuItems } = useOrders();
+  const { allMenuItems, cartItems, setCartItems } = useOrders();
   const { salty_pizzas } = allMenuItems;
-  const [cartItems, setCartItems] = useState<MinicartItem[]>([]);
 
   return (
     <>
