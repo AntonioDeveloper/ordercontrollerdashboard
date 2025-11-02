@@ -26,6 +26,10 @@ export default function Minicart ({ items = [], setItems }: MinicartProps) {
           </li>
         ))}
       </ul>
+      <div className="w-full h-12 flex items-center justify-between px-2 bg-zinc-100 rounded-[8px]">
+        <p className="text-zinc-600 text-sm font-bold">Total</p>
+        <p className="text-zinc-600 text-sm font-bold">R$ {items.reduce((acc, item) => acc + item.preco * item.quantidade, 0).toFixed(2)}</p>
+      </div>
     </div>
   )
 }

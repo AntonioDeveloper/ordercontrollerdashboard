@@ -23,7 +23,7 @@ export default function SaltyPizzasPage() {
                 <Image src="/img/generic-pizza.png" alt={pizza.nome} width={200} height={150} className="w-1/2 h-1/2 object-cover rounded-[8px]" />
                 <p className="text-zinc-600 text-sm text-center">{pizza.ingredientes_principais.join(", ")}</p>
                 <p className="text-zinc-600 text-sm text-center">R$ {pizza.preco.toFixed(2)}</p>
-                <button className="w-3x py-1 px-1 bg-[#ec4913] text-white text-sm font-bold rounded-[8px] cursor-pointer" onClick={() => setCartItems([...cartItems, {nome_item: pizza.nome, quantidade: 1}])}>Adicionar ao pedido</button>
+                <button className="w-3x py-1 px-1 bg-[#ec4913] text-white text-sm font-bold rounded-[8px] cursor-pointer" onClick={() => setCartItems([...cartItems, {nome_item: pizza.nome, quantidade: 1, preco: pizza.preco}])}>Adicionar ao pedido</button>
               </div>
             ))
           }

@@ -3,4 +3,5 @@ export interface MinicartItem {
   tamanho?: 'Grande' | 'Média' | 'Pequena';
   quantidade: number;
   observacoes?: string;
+  preco: number;
 }
