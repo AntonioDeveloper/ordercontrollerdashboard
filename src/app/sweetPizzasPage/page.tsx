@@ -6,18 +6,18 @@ import Image from 'next/image';
 import {useState} from 'react';
 import { MinicartItem } from '@/model/minicart';
 
-export default function SaltyPizzasPage() {
+export default function SweetPizzasPage() {
   const { allMenuItems } = useOrders();
-  const { salty_pizzas } = allMenuItems;
+  const { sweet_pizzas } = allMenuItems;
   const [cartItems, setCartItems] = useState<MinicartItem[]>([]);
 
   return (
     <>
-      <h1>Pizzas Salgadas</h1>
+      <h1>Pizzas Doce</h1>
       <div className="w-full h-full flex">
         <div className="w-2/3 h-full flex flex-wrap gap-10">
           {
-            salty_pizzas.map((pizza) => (
+            sweet_pizzas.map((pizza) => (
               <div key={pizza.nome} className="w-1/3 h-auto max-h-1/2 border border-zinc-300 rounded-[8px] flex flex-col items-center">
                 <h2 className="text-zinc-600 text-2xl font-bold text-center">{pizza.nome}</h2>
                 <Image src="/img/generic-pizza.png" alt={pizza.nome} width={200} height={150} className="w-1/2 h-1/2 object-cover rounded-[8px]" />

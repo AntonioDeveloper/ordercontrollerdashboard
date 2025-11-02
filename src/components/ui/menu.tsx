@@ -1,7 +1,7 @@
 'use client'
 
 import { useOrders } from "@/context/context";
-import { IconPizza, IconUser } from "@tabler/icons-react";
+import { IconPizza, IconUser, IconGlassCocktail  } from "@tabler/icons-react";
 import Link from "next/link";
 import {useEffect} from 'react';
 
@@ -42,19 +42,19 @@ export default function Menu () {
           <ul className="w-full mt-5 px-5 py-2">
                 <li className="py-1.5">
                   <Link href="/saltyPizzasPage" className="w-full flex items-center text-white">
-                    <IconUser stroke={2} className="mr-2" />
+                    <IconPizza stroke={2} className="mr-2" />
                     Pizza Salgada
                   </Link>
                 </li>
                 <li className="py-1.5">
-                  <Link href="/ordersPage" className="w-full flex items-center text-white">
+                  <Link href="/sweetPizzasPage" className="w-full flex items-center text-white">
                     <IconPizza stroke={2} className="mr-2"/>
                     Pizza Doce
                   </Link>
                 </li>
                 <li className="py-1.5">
-                  <Link href="/ordersPage" className="w-full flex items-center text-white">
-                    <IconPizza stroke={2} className="mr-2"/>
+                  <Link href="/beveragesPage" className="w-full flex items-center text-white">
+                    <IconGlassCocktail  stroke={2} className="mr-2"/>
                     Bebidas
                   </Link>
                 </li>

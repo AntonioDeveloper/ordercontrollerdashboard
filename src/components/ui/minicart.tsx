@@ -19,7 +19,7 @@ export default function Minicart ({ items = [], setItems }: MinicartProps) {
               -
             </button>
             <input className="w-8 h-8 text-center text-zinc-600 text-sm font-bold" type="text" inputMode="numeric"
-            pattern="[0-9]*" value={item.quantidade} />
+            pattern="[0-9]*" value={item.quantidade} readOnly />
             <button className="w-8 h-8 text-center text-zinc-600 text-sm font-bold cursor-pointer" onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item ? { ...i, quantidade: i.quantidade + 1 } : i))}>
               +
             </button>
