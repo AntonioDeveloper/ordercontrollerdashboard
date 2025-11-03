@@ -1,3 +1,4 @@
+import { useOrders } from "@/context/context";
 import { MinicartItem } from "@/model/minicart";
 
 interface MinicartProps {
@@ -7,6 +8,8 @@ interface MinicartProps {
 
 export default function Minicart ({ items = [], setItems }: MinicartProps) {
 
+  const { createOrder } = useOrders();
+  
   return (
     <div className="w-1/3 h-full flex flex-col items-center gap-0.5">
       <h2 className="text-zinc-600 text-2xl font-bold text-center">Resumo do pedido</h2>
@@ -30,6 +33,10 @@ export default function Minicart ({ items = [], setItems }: MinicartProps) {
         <p className="text-zinc-600 text-sm font-bold">Total</p>
         <p className="text-zinc-600 text-sm font-bold">R$ {items.reduce((acc, item) => acc + item.preco * item.quantidade, 0).toFixed(2)}</p>
       </div>
+
+      <button className="w-full h-12 bg-zinc-600 text-white text-sm font-bold rounded-[8px] cursor-pointer" onClick={() => createOrder()}>
+        Finalizar pedido
+      </button>
     </div>
   )
 }

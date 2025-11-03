@@ -102,17 +102,51 @@ export const createOrder = async (req: any, res: any) => {
   console.log('Request params:', req.params);
 
   try {
+    // Normaliza req.body.pedido para array de itens
+    const pedidoInput = req.body?.pedido;
+    const isArray = Array.isArray(pedidoInput);
+    console.log('[createOrder] pedido is array?', isArray);
+
+    if (!pedidoInput) {
+      return res
+        .status(400)
+        .json({
+          errorMessage: 'Campo "pedido" é obrigatório no corpo da requisição',
+        });
+    }
+
+    const pedidoArray = isArray ? pedidoInput : [pedidoInput];
+
+    const pedido = pedidoArray.map(
+      (
+        item: {
+          nome_item: string;
+          quantidade: number;
+          preco: number;
+          tamanho?: string;
+          observacoes?: string;
+        },
+        idx: number
+      ) => {
+        if (!item || typeof item !== 'object') {
+          throw new Error(`Item de pedido inválido na posição ${idx}`);
+        }
+        const { nome_item, quantidade, preco, tamanho, observacoes } = item;
+        if (nome_item == null || quantidade == null || preco == null) {
+          throw new Error(
+            `Item do pedido faltando campos obrigatórios (nome_item, quantidade, preco) na posição ${idx}`
+          );
+        }
+        return { nome_item, quantidade, preco, tamanho, observacoes };
+      }
+    );
+
     const newOrder = new OrderSchema({
       cardId: req.body.cardId,
       nome_cliente: req.body.nome_cliente,
       status_pedido: req.body.status_pedido,
       endereco: req.body.endereco,
-      pedido: {
-        pizza_sabor: req.body.pedido.pizza_sabor,
-        tamanho: req.body.pedido.tamanho,
-        quantidade: req.body.pedido.quantidade,
-        observacoes: req.body.pedido.observacoes,
-      },
+      pedido,
     });
     await newOrder.save();
     res.status(201).json(newOrder);

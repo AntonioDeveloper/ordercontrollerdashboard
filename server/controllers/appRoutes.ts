@@ -10,6 +10,7 @@ route.get('/clients', getAllClients);
 route.get('/menu', getAllMenu);
 
 route.put('/clients/update/:id', updateClient);
+route.put('/orders/update/:id', updateOrder);
 
 route.post('/signUpClient', signUpClient);
 route.post('/createOrder', createOrder);

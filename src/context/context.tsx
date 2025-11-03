@@ -38,6 +38,7 @@ type OrdersContextValue = {
   removeCartItem: (nome_item: string) => void;
   clearCart: () => void;
   getCartTotal: () => number;
+  createOrder: () => Promise<void>;
 };
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
@@ -163,6 +164,38 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
+   // orderData: Omit<OrderType, '_id'>
+
+  const createOrder = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/createOrder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            "cardId": "12",
+            "nome_cliente": "Gabriela Sá",
+            "status_pedido": "EM_PREPARACAO",
+            "endereco": "Rua das Miçangas, 1001, São Paulo - SP",
+            "pedido": cartItems.map(item => ({
+                "nome_item": item.nome_item,
+                "quantidade": item.quantidade,
+                "preco": item.preco,
+            }))
+        }),
+      });
+
+      console.log("response", response);
+      if (!response.ok) {
+        console.error('[OrdersProvider] POST /api/clients failed', response.status, response.statusText);
+        return;
+      }
+      const newOrder = await response.json();
+      setAllOrders(prev => [...prev, newOrder]);
+    } catch (e) {
+      console.error('[OrdersProvider] POST /api/createOrder error', e);
+    }
+  };
+
   const updateClientData = async (id: string, clientData: ClientType) => {
     console.log("Client Data CTX", clientData);
     try {
@@ -285,6 +318,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     removeCartItem,
     clearCart,
     getCartTotal,
+    createOrder
   };
 
   return (
