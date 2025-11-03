@@ -116,3 +116,40 @@ export const signUpClient = async (req: any, res: any) => {
     res.status(500).json({ errorMessage: error });
   }
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const loginClient = async (req: any, res: any) => {
+  console.log('=== loginClient function invoked ===');
+  console.log('Request body:', req.body);
+  console.log('Request params:', req.params);
+
+  const { telefone } = req.body;
+
+  if (!telefone) {
+    console.log('Telefone nulo.');
+    res.status(500).json({ errorMessage: 'Telefone nulo.' });
+    return;
+  }
+
+  try {
+    const currentClient = await ClientSchema.findOne({
+      telefone: telefone,
+    });
+
+    if (currentClient === null) {
+      res
+        .status(404)
+        .json({
+          errorMessage: 'Cliente não encontrado. Favor verifique o telefone.',
+        });
+    } else {
+      res.status(200).json(currentClient);
+    }
+  } catch (error) {
+    console.error(
+      'Telefone não fornecido ou não encontrado. Por favor, verifique:',
+      error
+    );
+    res.status(500).json({ errorMessage: error });
+  }
+};

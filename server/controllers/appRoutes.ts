@@ -1,6 +1,11 @@
 import express from 'express';
 import { createOrder, getAllOrders, updateOrder } from './orderController';
-import { getAllClients, signUpClient, updateClient } from './clientController';
+import {
+  getAllClients,
+  signUpClient,
+  updateClient,
+  loginClient,
+} from './clientController';
 import { getAllMenu } from './menuController';
 
 const route = express.Router();
@@ -14,5 +19,6 @@ route.put('/orders/update/:id', updateOrder);
 
 route.post('/signUpClient', signUpClient);
 route.post('/createOrder', createOrder);
+route.post('/loginClient', loginClient);
 
 export default route;
