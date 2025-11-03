@@ -39,6 +39,8 @@ type OrdersContextValue = {
   clearCart: () => void;
   getCartTotal: () => number;
   createOrder: () => Promise<void>;
+  loginClient: (telefone: ClientType) => Promise<void>;
+  logoutClient: () =>  Promise<void>;
 };
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
@@ -58,8 +60,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   const [allClients, setAllClients] = useState<ClientType[]>([]);
   const [currentPath, setCurrentPath] = useState('');
   const pathname = usePathname();
-
   const [menuPage, setMenuPage] = useState(false);
+  const [currentClient, setCurrentClient] = useState<ClientType | null>(null);
 
   // Minicart state
   const [cartItems, setCartItems] = useState<MinicartItem[]>([]);
@@ -277,6 +279,34 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginClient = async ({telefone} : ClientType) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/loginClient', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({telefone}),
+      });
+
+      console.log("response", response);
+
+      if (!response.ok) {
+        console.error('[OrdersProvider] POST /api/login client failed', response.status, response.statusText);
+        return;
+      }
+
+      const client = await response.json();
+      setCurrentClient(client);
+
+    } catch (error) {
+      console.error('[OrdersProvider] POST /api/loginClient error', error);
+    }
+  }
+
+  const logoutClient = async () => {
+    setCartItems([]);
+    setCurrentClient(null);
+  }
+
   useEffect(() => {
     fetchClients();
     fetchOrders();
@@ -318,7 +348,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     removeCartItem,
     clearCart,
     getCartTotal,
-    createOrder
+    createOrder,
+    loginClient,
+    logoutClient,
   };
 
   return (

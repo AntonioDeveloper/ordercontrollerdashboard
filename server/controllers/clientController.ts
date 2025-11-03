@@ -127,7 +127,7 @@ export const loginClient = async (req: any, res: any) => {
 
   if (!telefone) {
     console.log('Telefone nulo.');
-    res.status(500).json({ errorMessage: 'Telefone nulo.' });
+    res.status(400).json({ errorMessage: 'Telefone nulo, dado obrigatório.' });
     return;
   }
 
@@ -137,11 +137,9 @@ export const loginClient = async (req: any, res: any) => {
     });
 
     if (currentClient === null) {
-      res
-        .status(404)
-        .json({
-          errorMessage: 'Cliente não encontrado. Favor verifique o telefone.',
-        });
+      res.status(404).json({
+        errorMessage: 'Cliente não encontrado. Favor verifique o telefone.',
+      });
     } else {
       res.status(200).json(currentClient);
     }
@@ -150,6 +148,6 @@ export const loginClient = async (req: any, res: any) => {
       'Telefone não fornecido ou não encontrado. Por favor, verifique:',
       error
     );
-    res.status(500).json({ errorMessage: error });
+    res.status(500).json({ errorMessage: 'Erro interno do servidor.' });
   }
 };
