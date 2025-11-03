@@ -39,7 +39,7 @@ type OrdersContextValue = {
   clearCart: () => void;
   getCartTotal: () => number;
   createOrder: () => Promise<void>;
-  loginClient: (telefone: ClientType) => Promise<void>;
+  loginClient: (telefone: string) => Promise<void>;
   logoutClient: () =>  Promise<void>;
 };
 
@@ -65,7 +65,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   // Minicart state
   const [cartItems, setCartItems] = useState<MinicartItem[]>([]);
-  console.log('cartItems', cartItems);
+  console.log('currentClient', currentClient);
 
   const columns: ColumnType[] = useMemo(() => [
     { id: 'EM_PREPARACAO', title: 'Em preparação' },
@@ -279,7 +279,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const loginClient = async ({telefone} : ClientType) => {
+  const loginClient = async (telefone : string) => {
     try {
       const response = await fetch('http://localhost:3001/api/loginClient', {
         method: 'POST',
