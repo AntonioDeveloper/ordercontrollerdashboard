@@ -8,7 +8,9 @@ interface MinicartProps {
 
 export default function Minicart ({ items = [], setItems }: MinicartProps) {
 
-  const { createOrder } = useOrders();
+  const { createOrder, currentClient } = useOrders();
+
+  console.log("currentClient", currentClient);
   
   return (
     <div className="w-1/3 h-full flex flex-col items-center gap-0.5">

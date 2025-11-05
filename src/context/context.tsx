@@ -30,7 +30,6 @@ type OrdersContextValue = {
   currentPath: string;
   menuPage: boolean;
   signUpClient: (clientData: Omit<ClientType, '_id'>) => Promise<void>;
-  // Minicart state and API
   cartItems: MinicartItem[];
   setCartItems: React.Dispatch<React.SetStateAction<MinicartItem[]>>;
   addToCart: (item: MinicartItem) => void;
@@ -41,6 +40,7 @@ type OrdersContextValue = {
   createOrder: () => Promise<void>;
   loginClient: (telefone: string) => Promise<void>;
   logoutClient: () =>  Promise<void>;
+  currentClient: ClientType | null;
 };
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
@@ -65,7 +65,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   // Minicart state
   const [cartItems, setCartItems] = useState<MinicartItem[]>([]);
-  console.log('currentClient', currentClient);
+  // console.log('currentClient', currentClient);
 
   const columns: ColumnType[] = useMemo(() => [
     { id: 'EM_PREPARACAO', title: 'Em preparação' },
@@ -166,8 +166,6 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
-   // orderData: Omit<OrderType, '_id'>
-
   const createOrder = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/createOrder', {
@@ -175,9 +173,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             "cardId": "12",
-            "nome_cliente": "Gabriela Sá",
+            "nome_cliente": currentClient?.nome_cliente,
             "status_pedido": "EM_PREPARACAO",
-            "endereco": "Rua das Miçangas, 1001, São Paulo - SP",
+            "endereco": currentClient?.endereco,
             "pedido": cartItems.map(item => ({
                 "nome_item": item.nome_item,
                 "quantidade": item.quantidade,
@@ -351,6 +349,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     createOrder,
     loginClient,
     logoutClient,
+    currentClient
   };
 
   return (
