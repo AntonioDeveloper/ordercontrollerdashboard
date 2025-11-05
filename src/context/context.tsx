@@ -167,12 +167,31 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   };
 
   const createOrder = async () => {
+
+    const charArray = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9"];
+
+    let cardIdCode: string = "";
+    let assembleArray: Array<string> = [];
+    let i = 0;
+
+
+    function genCardIdCode() {
+      do {
+        assembleArray.push(charArray[Math.floor(Math.random() * charArray.length)])
+        i++;
+      } while (i < 6);
+
+      cardIdCode = assembleArray.join("");
+    }
+
+    genCardIdCode();
+
     try {
       const response = await fetch('http://localhost:3001/api/createOrder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            "cardId": "12",
+            "cardId": cardIdCode,
             "nome_cliente": currentClient?.nome_cliente,
             "status_pedido": "EM_PREPARACAO",
             "endereco": currentClient?.endereco,
