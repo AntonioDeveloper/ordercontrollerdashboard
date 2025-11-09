@@ -8,6 +8,8 @@ import { usePathname } from 'next/navigation';
 import { Root } from '@/model/menu';
 import { MinicartItem } from '@/model/minicart';
 
+type SignUpClientResult = { ok: true; client: ClientType } | { ok: false; status: number; statusText: string; errorMessage?: string } | string | undefined;
+
 type OrdersContextValue = {
   allOrders: OrderType[];
   ordersBoard: OrderType[];
@@ -29,7 +31,7 @@ type OrdersContextValue = {
   getPathName: () => void;
   currentPath: string;
   menuPage: boolean;
-  signUpClient: (clientData: Omit<ClientType, '_id'>) => Promise<void>;
+  signUpClient: (clientData: Omit<ClientType, '_id'>, options?: { timeoutMs?: number }) => Promise<SignUpClientResult>;
   cartItems: MinicartItem[];
   setCartItems: React.Dispatch<React.SetStateAction<MinicartItem[]>>;
   addToCart: (item: MinicartItem) => void;
@@ -38,7 +40,7 @@ type OrdersContextValue = {
   clearCart: () => void;
   getCartTotal: () => number;
   createOrder: () => Promise<void>;
-  loginClient: (telefone: string) => Promise<void>;
+  loginClient: (telefone: string) => Promise<SignUpClientResult>;
   logoutClient: () =>  Promise<void>;
   currentClient: ClientType | null;
 };
@@ -234,23 +236,58 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUpClient = async (clientData: Omit<ClientType, '_id'>) => {
+  const signUpClient = async (clientData: Omit<ClientType, '_id'>, options?: { timeoutMs?: number }):Promise<SignUpClientResult> => {
+
+    const timeoutMs = options?.timeoutMs ?? 8000;
+
+    const controller = new AbortController();
+
+    const { signal } = controller;
+
+    let didTimeout = false;
+
+    const timerId = setTimeout(() => { didTimeout = true; controller.abort(); }, timeoutMs);
+
     try {
-      const response = await fetch('http://localhost:3001/api/signUpClient', {
+      const response = await fetch('http://localhost:3001/api/signUpClien', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ clientData }),
+        signal,
       });
 
-      console.log("response", response);
+      
       if (!response.ok) {
-        console.error('[OrdersProvider] POST /api/clients failed', response.status, response.statusText);
-        return;
+        const ct = response.headers.get('content-type') || ''
+        
+        if(ct.includes('application/json')) {
+          const body = await response.json();
+          const errorMessage = body.errorMessage || body.message || JSON.stringify(body);
+          return errorMessage;
+        } else {
+          const text = await response.text();
+          return text;
+        }
       }
       const newClient = await response.json();
       setAllClients(prev => [...prev, newClient]);
+
+      return {
+        ok: true, client: newClient
+      }
     } catch (e) {
       console.error('[OrdersProvider] POST /api/signUpClient error', e);
+
+      if ((e as Error).name === 'AbortError') {
+        if (!didTimeout) {
+          return { ok: false, status: 0, statusText: 'Timeout', errorMessage: 'Tempo de resposta excedido.' }
+        } else {
+          return { ok: false, status: 0, statusText: 'Aborted', errorMessage: 'Requisição cancelada.' }
+        }
+      }
+      return { ok: false, status: 0, statusText: 'NetworkError' }
+    } finally {
+      clearTimeout(timerId);
     }
   };
 
@@ -296,28 +333,34 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const loginClient = async (telefone : string) => {
-    try {
-      const response = await fetch('http://localhost:3001/api/loginClient', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({telefone}),
-      });
+  const loginClient = async (telefone: string): Promise<SignUpClientResult> => {
+      try {
+        const response = await fetch('http://localhost:3001/api/loginClient', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telefone }),
+        });
 
-      console.log("response", response);
+        if (!response.ok) {
+          const ct = response.headers.get('content-type') || '';
+          if (ct.includes('application/json')) {
+            const body = await response.json();
+            const errorMessage = body.errorMessage || body.message || JSON.stringify(body);
+            return { ok: false, status: response.status, statusText: response.statusText, errorMessage };
+          } else {
+            const text = await response.text();
+            return { ok: false, status: response.status, statusText: response.statusText, errorMessage: text };
+          }
+        }
 
-      if (!response.ok) {
-        console.error('[OrdersProvider] POST /api/login client failed', response.status, response.statusText);
-        return;
+        const client: ClientType = await response.json();
+        setCurrentClient(client);
+        return { ok: true, client };
+      } catch (error) {
+        console.error('[OrdersProvider] POST /api/loginClient error', error);
+        return { ok: false, status: 0, statusText: 'NetworkError' };
       }
-
-      const client = await response.json();
-      setCurrentClient(client);
-
-    } catch (error) {
-      console.error('[OrdersProvider] POST /api/loginClient error', error);
     }
-  }
 
   const logoutClient = async () => {
     setCartItems([]);

@@ -9,18 +9,45 @@ export default function Home() {
 
   const { allClients, signUpClient } = useOrders();
   const [isOpen, setIsOpen] = useState(false);
+  const [signUpDone, setSignUpDone] = useState(false);
   const [nome, setNome] = useState('');
   const [endereco, setEndereco] = useState('');
   const [telefone, setTelefone] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const payload = {
       nome_cliente: nome,
       endereco: endereco,
       telefone: telefone,
     }
-    signUpClient(payload);
+    
+    try {
+      setIsLoading(true);
+      const result = await signUpClient(payload);
+      console.log("OK", result);
+
+      if (typeof result === 'object' && result && !result.ok) {
+        setErrorMessage(result.errorMessage ?? null);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        setSignUpDone(true);
+        setErrorMessage(null);
+        setTimeout(() => {
+          setIsOpen(false);
+        }, 4000);
+      }
+    } catch (err) {
+      setErrorMessage("Ocorreu um erro inesperado");
+      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
+    }
   }
+
+  console.log("errorMessage", errorMessage);
 
   return (
     <div className="w-full px-4 py-4">
@@ -45,14 +72,29 @@ export default function Home() {
         </tbody>
       </table>
       
-      <SignUpClientsModal open={isOpen} onClose={() => setIsOpen(false)}>
+      <SignUpClientsModal open={isOpen} onClose={() => {
+          setIsOpen(false);
+          setErrorMessage(null);
+        }}>{
+        errorMessage === null 
+        ?
+        (
+          <>
         <h1 className="text-2xl font-bold">Cadastrar Novo Cliente</h1>
         <form className="w-full flex flex-col items-center gap-4" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
           <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Nome" onChange={(e) => setNome(e.target.value)} />
           <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Endereço" onChange={(e) => setEndereco(e.target.value)} />
           <input className="w-full h-12 px-4 border border-gray-300 rounded-md" type="text" placeholder="Telefone" onChange={(e) => setTelefone(e.target.value)} />
-          <button className="w-full h-12 bg-[#ec4913] text-white px-4 py-2 rounded-md cursor-pointer" type="submit">Cadastrar</button>
+          <button className="w-full h-12 bg-[#ec4913] text-white px-4 py-2 rounded-md cursor-pointer" type="submit">{signUpDone === false ? "Cadastrar" : "Cadastro realizado!"}</button>
         </form>
+        </>
+        )
+        :
+        (
+          <h1>Falha no Cadastro!!!!</h1>
+        )
+        }
+        
       </SignUpClientsModal>
     </div>
   );
