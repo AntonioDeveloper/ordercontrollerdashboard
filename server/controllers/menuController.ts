@@ -53,8 +53,6 @@ export const getAllMenu = async (req: any, res: any) => {
       vegetarian_pizzas: menuDoc.pizzas_vegetarianas || [],
       beverages: menuDoc.bebidas || [],
     };
-    // sconsole.log('[getAllMenu] Count:', allMenuData);
-
     // Sempre retorna 200 com array (vazio ou preenchido) para facilitar consumo no frontend
     return res.status(200).json(allMenuData ?? []);
   } catch (error) {

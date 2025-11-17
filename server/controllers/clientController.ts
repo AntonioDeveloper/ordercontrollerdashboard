@@ -93,7 +93,7 @@ export const updateClient = async (req: any, res: any) => {
     res.status(200).json(updatedData);
   } catch (error) {
     console.error('Error in updateOrder:', error);
-    res.status(500).json({ errorMessage: error });
+    res.status(500).json({ errorMessage: String(error) });
   }
 };
 
@@ -104,16 +104,27 @@ export const signUpClient = async (req: any, res: any) => {
   console.log('Request params:', req.params);
 
   try {
+    const body = req.body?.clientData;
+    if (!body || !body.nome_cliente || !body.endereco || !body.telefone) {
+      return res.status(400).json({
+        errorMessage: 'Campos obrigatórios: nome_cliente, endereco, telefone.',
+      });
+    }
     const newClient = new ClientSchema({
-      nome_cliente: req.body.clientData.nome_cliente,
-      endereco: req.body.clientData.endereco,
-      telefone: req.body.clientData.telefone,
+      nome_cliente: body.nome_cliente,
+      endereco: body.endereco,
+      telefone: body.telefone,
     });
     await newClient.save();
     res.status(201).json(newClient);
   } catch (error) {
     console.error('Error in signUpClient:', error);
-    res.status(500).json({ errorMessage: error });
+    const msg = String((error as Error)?.message ?? error);
+    const code = (error as { code?: number })?.code;
+    if (code === 11000 || msg.includes('duplicate key')) {
+      return res.status(409).json({ errorMessage: 'Telefone já cadastrado.' });
+    }
+    res.status(500).json({ errorMessage: msg });
   }
 };
 

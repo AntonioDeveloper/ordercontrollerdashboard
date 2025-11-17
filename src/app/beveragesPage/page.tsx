@@ -3,6 +3,7 @@
 import Minicart from "@/components/ui/minicart";
 import { useOrders } from "@/context/context";
 import Image from 'next/image';
+import NutritionPanel from "@/components/ui/nutritionPanel";
 
 export default function BeveragesPage() {
   const { allMenuItems, cartItems, setCartItems } = useOrders();
@@ -25,8 +26,10 @@ export default function BeveragesPage() {
             ))
           }
         </div>
-
-        <Minicart items={cartItems} setItems={setCartItems} />
+        <div className="w-1/3 h-full flex flex-col">
+          <Minicart items={cartItems} setItems={setCartItems} />
+          <NutritionPanel />
+        </div>
       </div>
     </>
   );

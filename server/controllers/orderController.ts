@@ -91,7 +91,7 @@ export const updateOrder = async (req: any, res: any) => {
     res.status(200).json(updatedData);
   } catch (error) {
     console.error('Error in updateOrder:', error);
-    res.status(500).json({ errorMessage: error });
+    res.status(500).json({ errorMessage: String(error) });
   }
 };
 
@@ -152,6 +152,13 @@ export const createOrder = async (req: any, res: any) => {
     res.status(201).json(newOrder);
   } catch (error) {
     console.error('Error in createOrder:', error);
-    res.status(500).json({ errorMessage: error });
+    const msg = String(error);
+    if (
+      msg.includes('Item de pedido inválido') ||
+      msg.includes('Item do pedido faltando campos obrigatórios')
+    ) {
+      return res.status(400).json({ errorMessage: msg });
+    }
+    res.status(500).json({ errorMessage: msg });
   }
 };

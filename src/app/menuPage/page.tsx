@@ -24,6 +24,19 @@ export default function MenuPage() {
     placeholderText = "Buscar produto";
   }
 
+  const mapLoginError = (status?: number, fallback?: string | null) => {
+    switch (status) {
+      case 400:
+        return 'Telefone inválido. Informe um número válido.';
+      case 404:
+        return 'Cliente não encontrado. Verifique o telefone.';
+      case 500:
+        return 'Erro interno. Tente novamente mais tarde.';
+      default:
+        return fallback || 'Falha ao efetuar login.';
+    }
+  };
+
   const handleSubmit = async () => {
     const payload = {
       telefone: telefone,
@@ -35,7 +48,7 @@ export default function MenuPage() {
       console.log("OK", result);
 
       if (typeof result === 'object' && result && !result.ok) {
-        setErrorMessage(result.errorMessage ?? null);
+        setErrorMessage(mapLoginError(result.status, result.errorMessage ?? null));
         setIsLoading(false);
       } else {
         setIsLoading(false);
@@ -55,7 +68,6 @@ export default function MenuPage() {
 
   return (
     <section className="w-full h-full">
-      <SearchBar placeholder={placeholderText} />
     
       <div className="w-full h-full bg-[#F5F5F5] grid grid-cols-2 gap-1 p-4">
       <button className="bg-[#ec4913] text-white px-4 py-2 rounded-md cursor-pointer" onClick={() => setIsOpen(true)} >Login</button>

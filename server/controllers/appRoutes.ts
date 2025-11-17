@@ -7,6 +7,7 @@ import {
   loginClient,
 } from './clientController';
 import { getAllMenu } from './menuController';
+import { analyzeNutrition } from './nutritionController';
 
 const route = express.Router();
 
@@ -20,5 +21,6 @@ route.put('/orders/update/:id', updateOrder);
 route.post('/signUpClient', signUpClient);
 route.post('/createOrder', createOrder);
 route.post('/loginClient', loginClient);
+route.post('/analyzeNutrition', analyzeNutrition);
 
 export default route;

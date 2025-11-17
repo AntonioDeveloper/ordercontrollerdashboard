@@ -249,7 +249,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     const timerId = setTimeout(() => { didTimeout = true; controller.abort(); }, timeoutMs);
 
     try {
-      const response = await fetch('http://localhost:3001/api/signUpClien', {
+      const response = await fetch('http://localhost:3001/api/signUpClient', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ clientData }),
@@ -263,10 +263,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         if(ct.includes('application/json')) {
           const body = await response.json();
           const errorMessage = body.errorMessage || body.message || JSON.stringify(body);
-          return errorMessage;
+          return { ok: false, status: response.status, statusText: response.statusText, errorMessage };
         } else {
           const text = await response.text();
-          return text;
+          return { ok: false, status: response.status, statusText: response.statusText, errorMessage: text };
         }
       }
       const newClient = await response.json();
@@ -279,11 +279,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       console.error('[OrdersProvider] POST /api/signUpClient error', e);
 
       if ((e as Error).name === 'AbortError') {
-        if (!didTimeout) {
+        if (didTimeout) {
           return { ok: false, status: 0, statusText: 'Timeout', errorMessage: 'Tempo de resposta excedido.' }
-        } else {
-          return { ok: false, status: 0, statusText: 'Aborted', errorMessage: 'Requisição cancelada.' }
         }
+        return { ok: false, status: 0, statusText: 'Aborted', errorMessage: 'Requisição cancelada.' }
       }
       return { ok: false, status: 0, statusText: 'NetworkError' }
     } finally {
