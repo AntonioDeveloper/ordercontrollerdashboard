@@ -1,5 +1,7 @@
 import { useOrders } from "@/context/context";
 import { MinicartItem } from "@/model/minicart";
+import ModalComponent from "./modalComponent";
+import {useState} from "react";
 
 interface MinicartProps {
   items?: MinicartItem[];
@@ -9,6 +11,7 @@ interface MinicartProps {
 export default function Minicart ({ items = [], setItems }: MinicartProps) {
 
   const { createOrder, currentClient } = useOrders();
+  const [isOpen, setIsOpen] = useState(false);
 
   console.log("currentClient", currentClient);
   
@@ -36,9 +39,16 @@ export default function Minicart ({ items = [], setItems }: MinicartProps) {
         <p className="text-zinc-600 text-sm font-bold">R$ {items.reduce((acc, item) => acc + item.preco * item.quantidade, 0).toFixed(2)}</p>
       </div>
 
-      <button className="w-full h-12 bg-zinc-600 text-white text-sm font-bold rounded-[8px] cursor-pointer" onClick={() => createOrder()}>
+      <button className="w-full h-12 bg-zinc-600 text-white text-sm font-bold rounded-[8px] cursor-pointer" onClick={() => {
+        createOrder();
+        setIsOpen(true);
+        }}>
         Finalizar pedido
       </button>
+
+      <ModalComponent open={isOpen} onClose={() => {setIsOpen(false)}}>
+          <h1>Pedido Realizado!</h1>    
+      </ModalComponent>
     </div>
   )
 }

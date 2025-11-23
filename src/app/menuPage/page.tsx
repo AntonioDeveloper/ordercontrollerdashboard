@@ -3,7 +3,7 @@
 import SearchBar from "@/components/ui/searchBar";
 import { useOrders } from "@/context/context";
 import {useState} from "react";
-import LoginClientModal from "@/components/ui/loginClientModal";
+import ModalComponent from "@/components/ui/modalComponent";
 
 export default function MenuPage() {
   const [isOpen, setIsOpen] = useState(false);
@@ -73,7 +73,7 @@ export default function MenuPage() {
       <button className="bg-[#ec4913] text-white px-4 py-2 rounded-md cursor-pointer" onClick={() => setIsOpen(true)} >Login</button>
       </div>
 
-      <LoginClientModal open={isOpen} onClose={() => {setIsOpen(false); setErrorMessage(null)}} >
+      <ModalComponent open={isOpen} onClose={() => {setIsOpen(false); setErrorMessage(null)}} >
               <h1 className="text-2xl font-bold">Faça seu login!</h1>
               <>
                 <form className="w-full flex flex-col items-center gap-4" onSubmit={(e) => { e.preventDefault(); handleSubmit();}}>
@@ -88,7 +88,7 @@ export default function MenuPage() {
                 
                 </form>
               </>
-            </LoginClientModal>
+            </ModalComponent>
     </section>
   )
 }

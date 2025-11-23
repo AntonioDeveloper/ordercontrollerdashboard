@@ -7,7 +7,7 @@ type LoginClientModalProps = {
   children: React.ReactNode
 }
 
-export default function LoginClientModal({ open, onClose, children }: LoginClientModalProps) {
+export default function ModalComponent({ open, onClose, children }: LoginClientModalProps) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

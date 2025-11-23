@@ -35,7 +35,7 @@ function buildPrompt(cartItems: CartItem[], baseline?: LocalBaseline): string {
   }`;
 
   return [
-    'Você é um assistente nutricional. Responda SOMENTE com JSON válido.',
+    'Você é um assistente nutricional. Responda SOMENTE com JSON válido. Leve em conta o que está sendo pedido para elaborar suas respostas',
     'Formato obrigatório do JSON (campo e tipo exatos):',
     schema,
     'Regras:',
@@ -136,6 +136,7 @@ export async function analyzeWithAI(
 
     const data = await resp.json();
     const content: string | undefined = data?.choices?.[0]?.message?.content;
+
     if (typeof content !== 'string' || content.trim().length === 0) {
       throw new Error('Resposta da IA vazia ou não textual');
     }
