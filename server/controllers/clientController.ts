@@ -50,6 +50,36 @@ export const getAllClients = async (req: any, res: any) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getOneClient = async (req: any, res: any) => {
+  try {
+    const conn = mongoose.connection;
+    const dbName = conn?.db?.databaseName;
+    const modelName = ClientSchema.modelName;
+    const collectionName = ClientSchema.collection?.name;
+
+    // Log de diagnóstico
+    console.log('[getOneClient] DB:', dbName);
+    console.log('[getOneClient] Model:', modelName);
+    console.log('[getOneClient] Collection:', collectionName);
+
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ errorMessage: 'Query data is required' });
+    }
+
+    const name = req.body.query;
+
+    const foundClient = await ClientSchema.findOne({
+      nome_cliente: name,
+    }).exec();
+
+    return res.status(200).json(foundClient ?? []);
+  } catch (error) {
+    console.error('Error in updateOrder:', error);
+    res.status(500).json({ errorMessage: String(error) });
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const updateClient = async (req: any, res: any) => {
   console.log('=== updateClient function invoked ===');
   console.log('Request body:', req.body);

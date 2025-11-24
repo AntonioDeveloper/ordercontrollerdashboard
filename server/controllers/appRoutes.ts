@@ -5,6 +5,7 @@ import {
   signUpClient,
   updateClient,
   loginClient,
+  getOneClient,
 } from './clientController';
 import { getAllMenu } from './menuController';
 import { analyzeNutrition } from './nutritionController';
@@ -22,5 +23,6 @@ route.post('/signUpClient', signUpClient);
 route.post('/createOrder', createOrder);
 route.post('/loginClient', loginClient);
 route.post('/analyzeNutrition', analyzeNutrition);
+route.post('/clients/fetchClient', getOneClient);
 
 export default route;

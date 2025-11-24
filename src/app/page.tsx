@@ -1,13 +1,15 @@
 'use client'
 
 import ClientRow from "@/components/ui/clientRow";
+import SearchBar from "@/components/ui/searchBar";
 import SignUpClientsModal from "@/components/ui/signUpClientsModal";
 import { useOrders } from "@/context/context";
+import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
 
 export default function Home() {
 
-  const { allClients, signUpClient } = useOrders();
+  const { allClients, signUpClient, setQuery, query, fetchClient} = useOrders();
   const [isOpen, setIsOpen] = useState(false);
   const [signUpDone, setSignUpDone] = useState(false);
   const [nome, setNome] = useState('');
@@ -15,6 +17,7 @@ export default function Home() {
   const [telefone, setTelefone] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  
 
   const handleSubmit = async () => {
     const payload = {
@@ -47,13 +50,16 @@ export default function Home() {
     }
   }
 
-  console.log("errorMessage", errorMessage);
-
   return (
     <div className="w-full px-4 py-4">
 
       <div className="flex justify-between items-center mb-4.5">
         <h1 className="text-2xl font-bold">Clientes</h1>
+        {/* <IconSearch aria-hidden="true" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" /> */}
+        <SearchBar placeholder={"Buscar cliente..."} onChange={(e) => {
+          setQuery(e.target.value);
+        }}/>
+          <button className="bg-[#ec8e13] text-white px-4 py-2 rounded-md cursor-pointer" onClick={() => fetchClient(query)} >Pesquisar</button>
         <button className="bg-[#ec4913] text-white px-4 py-2 rounded-md cursor-pointer" onClick={() => setIsOpen(true)} >Adicionar Cliente</button>
       </div>
 

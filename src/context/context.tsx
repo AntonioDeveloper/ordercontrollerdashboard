@@ -10,6 +10,8 @@ import { MinicartItem } from '@/model/minicart';
 
 type SignUpClientResult = { ok: true; client: ClientType } | { ok: false; status: number; statusText: string; errorMessage?: string } | string | undefined;
 
+type fetchClientResult = { ok: true; client: ClientType } | { ok: false; status: number; statusText: string; errorMessage?: string } | string | undefined;
+
 type OrdersContextValue = {
   allOrders: OrderType[];
   ordersBoard: OrderType[];
@@ -43,6 +45,10 @@ type OrdersContextValue = {
   loginClient: (telefone: string) => Promise<SignUpClientResult>;
   logoutClient: () =>  Promise<void>;
   currentClient: ClientType | null;
+  query: string;
+  setQuery: (query: string) => void;
+  fetchClient: (name: string) => Promise<fetchClientResult>;
+  foundClient: ClientType | null;
 };
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
@@ -64,6 +70,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [menuPage, setMenuPage] = useState(false);
   const [currentClient, setCurrentClient] = useState<ClientType | null>(null);
+  const [query, setQuery] = useState("");
+  const [foundClient, setFoundClient] = useState<ClientType | null>(null);
 
   // Minicart state
   const [cartItems, setCartItems] = useState<MinicartItem[]>([]);
@@ -332,6 +340,36 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const fetchClient = async (query: string): Promise<fetchClientResult> => {
+    try {
+      const response = await fetch('http://localhost:3001/api/clients/fetchClient', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify({query})
+      });
+      console.log("query", query);
+      if (!response.ok) {
+          const ct = response.headers.get('content-type') || '';
+          if (ct.includes('application/json')) {
+            const body = await response.json();
+            const errorMessage = body.errorMessage || body.message || JSON.stringify(body);
+            return { ok: false, status: response.status, statusText: response.statusText, errorMessage };
+          } else {
+            const text = await response.text();
+            return { ok: false, status: response.status, statusText: response.statusText, errorMessage: text };
+          }
+        }
+
+        const client = await response.json();
+        setFoundClient(client)
+        return { ok: true, client };
+
+    } catch (error) {
+        console.error('[OrdersProvider] POST /api/fetchClient error', error);
+        return { ok: false, status: 0, statusText: 'NetworkError' };
+    }
+  }
+
   const loginClient = async (telefone: string): Promise<SignUpClientResult> => {
       try {
         const response = await fetch('http://localhost:3001/api/loginClient', {
@@ -410,7 +448,11 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     createOrder,
     loginClient,
     logoutClient,
-    currentClient
+    currentClient,
+    query, 
+    setQuery,
+    fetchClient,
+    foundClient,
   };
 
   return (

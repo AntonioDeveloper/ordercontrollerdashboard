@@ -1,9 +1,12 @@
+'use client'
+
 interface SearchBarProps {
   placeholder: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function SearchBar({placeholder}: SearchBarProps) {
+export default function SearchBar({placeholder, onChange}: SearchBarProps) {
   return (
-    <input className="w-full px-2 py-2 rounded-[8px] text-black" type="text" placeholder={placeholder} />
+    <input className="w-full px-2 py-2 rounded-[8px] text-black" type="text" placeholder={placeholder} onChange={onChange}/>
   )
 }

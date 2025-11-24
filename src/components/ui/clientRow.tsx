@@ -19,7 +19,7 @@ export default function ClientRow({ clients }: ClientRowProps) {
     telefone: "",
   });
 
-  const { updateClientData } = useOrders();
+  const { updateClientData, foundClient, query } = useOrders();
 
   const handleSave = async (id: string) => {
     setNewData({
@@ -40,12 +40,18 @@ export default function ClientRow({ clients }: ClientRowProps) {
       setEditingName("");
     }
     runUpdateClient();
-    console.log("newData", newData);
   }, [newData]);
+ 
+  const singleClientArray: ClientType[] = [];
+  if (query && foundClient) singleClientArray.push(foundClient);
+
+  const clientLinesArray: ClientType[] = singleClientArray.length == 1 ? singleClientArray : clients;
+  
+  console.log("foundClient", singleClientArray, query, foundClient);   
 
   return (
     <>
-      {clients.map((client: ClientType) => {
+      {clientLinesArray.map((client: ClientType) => {
         const isEditing = editingId === client._id;
         return (
           <tr key={client._id} className="w-full">
