@@ -3,6 +3,7 @@
 import { ClientType } from "@/model/clientType";
 import { useState, useEffect } from "react";
 import { useOrders } from "@/context/context";
+import { OrderType } from "@/model/orderType";
 
 interface ClientRowProps {
   clients: ClientType[];
@@ -19,7 +20,7 @@ export default function ClientRow({ clients }: ClientRowProps) {
     telefone: "",
   });
 
-  const { updateClientData, foundClient, query } = useOrders();
+  const { updateClientData, foundClient, query, allOrders } = useOrders();
 
   const handleSave = async (id: string) => {
     setNewData({
@@ -91,6 +92,9 @@ export default function ClientRow({ clients }: ClientRowProps) {
               ) : (
                 client.telefone
               )}</td>
+            <td className="w-1/12 border border-gray-300 px-4 py-2">
+              {allOrders.filter((o: OrderType) => o.nome_cliente === client.nome_cliente).length}
+            </td>
             <td className="w-1/12 border border-gray-300 px-4 py-2">
               <button
                 className="cursor-pointer bg-[#ec4913] text-white px-3 py-1 rounded"
