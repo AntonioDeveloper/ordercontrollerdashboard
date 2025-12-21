@@ -66,7 +66,7 @@ export default function Menu () {
         menuPage === false
         ?
         (<div className="absolute bottom-5 left-5 w-1/2">
-        <Link href="/menuPage" className="w-full text-center bg-[#ec4913] px-2 py-2 rounded-[8px] text-white">
+        <Link href="/loginPage" className="w-full text-center bg-[#ec4913] px-2 py-2 rounded-[8px] text-white">
           Novo Pedido
         </Link>
       </div>)

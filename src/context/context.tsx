@@ -86,7 +86,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   ], []);
 
   const getPathName = () => {
-    if (pathname === '/menuPage' || pathname === '/saltyPizzasPage' || pathname === '/sweetPizzasPage' || pathname === '/vegetarianPizzasPage' || pathname === '/beveragesPage') {
+    if (pathname === '/loginPage' || pathname === '/saltyPizzasPage' || pathname === '/sweetPizzasPage' || pathname === '/vegetarianPizzasPage' || pathname === '/beveragesPage') {
       setMenuPage(true);
       setCurrentPath(pathname);
     } else {
