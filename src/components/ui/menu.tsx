@@ -15,23 +15,23 @@ export default function Menu () {
   }, [getPathName, menuPage]);
 
   return (
-    <aside className="w-1/6 h-dvh flex flex-col relative bg-slate-900">
-      <h1 className="px-5 py-2 text-2xl font-bold text-white">Pizza Dash Menu</h1>
+    <aside className="w-1/6 h-full flex flex-col relative bg-white border-r border-gray-100">
+      <h1 className="px-5 py-6 text-2xl font-bold text-gray-800">Pizza Dash Menu</h1>
 
       {
         menuPage === false
         ?
         (
-          <ul className="w-full mt-5 px-5 py-2">
+          <ul className="w-full mt-5 px-5 py-2 space-y-2">
                 <li className="py-1.5">
-                  <Link href="/" className="w-full flex items-center text-white">
-                    <IconUser stroke={2} className="mr-2" />
+                  <Link href="/" className="w-full flex items-center text-gray-600 hover:text-[#ec4913] transition-colors font-medium">
+                    <IconUser stroke={2} className="mr-3" />
                     Clientes
                   </Link>
                 </li>
                 <li className="py-1.5">
-                  <Link href="/ordersPage" className="w-full flex items-center text-white">
-                    <IconPizza stroke={2} className="mr-2"/>
+                  <Link href="/ordersPage" className="w-full flex items-center text-gray-600 hover:text-[#ec4913] transition-colors font-medium">
+                    <IconPizza stroke={2} className="mr-3"/>
                     Pedidos
                   </Link>
                 </li>
@@ -39,22 +39,22 @@ export default function Menu () {
         )
         :
         (
-          <ul className="w-full mt-5 px-5 py-2">
+          <ul className="w-full mt-5 px-5 py-2 space-y-2">
                 <li className="py-1.5">
-                  <Link href="/saltyPizzasPage" className="w-full flex items-center text-white">
-                    <IconPizza stroke={2} className="mr-2" />
+                  <Link href="/saltyPizzasPage" className="w-full flex items-center text-gray-600 hover:text-[#ec4913] transition-colors font-medium">
+                    <IconPizza stroke={2} className="mr-3" />
                     Pizza Salgada
                   </Link>
                 </li>
                 <li className="py-1.5">
-                  <Link href="/sweetPizzasPage" className="w-full flex items-center text-white">
-                    <IconPizza stroke={2} className="mr-2"/>
+                  <Link href="/sweetPizzasPage" className="w-full flex items-center text-gray-600 hover:text-[#ec4913] transition-colors font-medium">
+                    <IconPizza stroke={2} className="mr-3"/>
                     Pizza Doce
                   </Link>
                 </li>
                 <li className="py-1.5">
-                  <Link href="/beveragesPage" className="w-full flex items-center text-white">
-                    <IconGlassCocktail  stroke={2} className="mr-2"/>
+                  <Link href="/beveragesPage" className="w-full flex items-center text-gray-600 hover:text-[#ec4913] transition-colors font-medium">
+                    <IconGlassCocktail  stroke={2} className="mr-3"/>
                     Bebidas
                   </Link>
                 </li>
@@ -65,15 +65,15 @@ export default function Menu () {
       {
         menuPage === false
         ?
-        (<div className="absolute bottom-5 left-5 w-1/2">
-        <Link href="/loginPage" className="w-full text-center bg-[#ec4913] px-2 py-2 rounded-[8px] text-white">
+        (<div className="absolute bottom-5 left-5 right-5">
+        <Link href="/loginPage" className="w-full block text-center bg-[#ec4913] hover:bg-[#d14010] px-4 py-3 rounded-xl text-white font-bold transition-colors shadow-lg shadow-orange-200">
           Novo Pedido
         </Link>
       </div>)
         :
         (
-          <div className="absolute bottom-5 left-5 w-1/2">
-            <Link href="/" className="w-full text-center bg-[#ec4913] px-2 py-2 rounded-[8px] text-white">
+          <div className="absolute bottom-5 left-5 right-5">
+            <Link href="/" className="w-full block text-center bg-[#ec4913] hover:bg-[#d14010] px-4 py-3 rounded-xl text-white font-bold transition-colors shadow-lg shadow-orange-200">
               Voltar
             </Link>
           </div>

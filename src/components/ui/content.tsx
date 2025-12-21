@@ -6,7 +6,7 @@ interface ContentProps {
 
 export default function Content({ children }: ContentProps) {
   return (
-    <section className="w-full h-full bg-slate-100 p-4 overflow-auto">
+    <section className="flex-1 w-full min-h-0 overflow-hidden flex flex-col">
       {children}
     </section>
   );

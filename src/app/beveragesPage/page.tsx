@@ -1,36 +1,61 @@
 'use client'
 
 import Minicart from "@/components/ui/minicart";
+import ProductCard from "@/components/ui/productCard";
 import { useOrders } from "@/context/context";
-import Image from 'next/image';
-import NutritionPanel from "@/components/ui/nutritionPanel";
+import SearchBar from "@/components/ui/searchBar";
+import { useState } from "react";
 
 export default function BeveragesPage() {
-  const { allMenuItems, cartItems, setCartItems } = useOrders();
+  const { allMenuItems, addToCart, cartItems, setCartItems } = useOrders();
   const { beverages } = allMenuItems;
+  const [filter, setFilter] = useState("");
+
+  const filteredBeverages = beverages.filter(b => 
+    b.nome.toLowerCase().includes(filter.toLowerCase())
+  );
 
   return (
-    <>
-      <h1>Pizzas Doce</h1>
-      <div className="w-full h-full flex">
-        <div className="w-2/3 h-full flex flex-wrap gap-10">
-          {
-            beverages.map((beverage) => (
-              <div key={beverage.nome} className="w-1/3 h-auto max-h-1/2 border border-zinc-300 rounded-[8px] flex flex-col items-center">
-                <h2 className="text-zinc-600 text-2xl font-bold text-center">{beverage.nome}</h2>
-                <Image src="/img/generic-beverage.png" alt={beverage.nome} width={200} height={150} className="w-1/2 h-1/2 object-cover rounded-[8px]" />
-                <p className="text-zinc-600 text-sm text-center">{beverage.ingredientes_principais.join(", ")}</p>
-                <p className="text-zinc-600 text-sm text-center">R$ {beverage.preco.toFixed(2)}</p>
-                <button className="w-3x py-1 px-1 bg-[#ec4913] text-white text-sm font-bold rounded-[8px] cursor-pointer" onClick={() => setCartItems([...cartItems, {nome_item: beverage.nome, quantidade: 1, preco: beverage.preco}])}>Adicionar ao pedido</button>
-              </div>
-            ))
-          }
+    <div className="w-full h-full flex bg-[#F9F9F9]">
+      {/* Main Content Area */}
+      <div className="flex-grow h-full flex flex-col p-8 overflow-hidden">
+        
+        {/* Header / Search */}
+        <div className="w-full max-w-3xl mb-8">
+            <SearchBar 
+                placeholder="Buscar Bebida..." 
+                onChange={(e) => setFilter(e.target.value)}
+            />
         </div>
-        <div className="w-1/3 h-full flex flex-col">
-          <Minicart items={cartItems} setItems={setCartItems} />
-          <NutritionPanel />
+
+        {/* Product Grid */}
+        <div className="flex-grow overflow-y-auto pr-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8">
+            {
+                filteredBeverages.map((beverage) => (
+                    <ProductCard
+                        key={beverage.nome}
+                        name={beverage.nome}
+                        description={beverage.ingredientes_principais.join(", ")}
+                        price={beverage.preco}
+                        imageSrc="/img/generic-beverage.png"
+                        onAdd={() => addToCart({nome_item: beverage.nome, quantidade: 1, preco: beverage.preco})}
+                    />
+                ))
+            }
+            </div>
+            {filteredBeverages.length === 0 && (
+                <div className="w-full text-center py-20 text-gray-400">
+                    Nenhum produto encontrado.
+                </div>
+            )}
         </div>
       </div>
-    </>
+
+      {/* Right Sidebar (Cart) */}
+      <div className="w-[400px] h-full bg-white shadow-xl z-10">
+        <Minicart items={cartItems} setItems={setCartItems} />
+      </div>
+    </div>
   );
 }

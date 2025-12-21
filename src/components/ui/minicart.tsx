@@ -1,54 +1,126 @@
+'use client'
+
 import { useOrders } from "@/context/context";
 import { MinicartItem } from "@/model/minicart";
 import ModalComponent from "./modalComponent";
-import {useState} from "react";
+import { useState } from "react";
+import { IconShoppingCart, IconTrash, IconPizza, IconGlass } from "@tabler/icons-react";
 
 interface MinicartProps {
   items?: MinicartItem[];
   setItems?: (items: MinicartItem[]) => void;
 }
 
-export default function Minicart ({ items = [], setItems }: MinicartProps) {
-
+export default function Minicart({ items = [], setItems }: MinicartProps) {
   const { createOrder, currentClient } = useOrders();
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log("currentClient", currentClient);
-  
-  return (
-    <div className="w-1/3 h-full flex flex-col items-center gap-0.5">
-      <h2 className="text-zinc-600 text-2xl font-bold text-center">Resumo do pedido</h2>
+  const total = items.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
 
-      <ul className="w-full h-auto flex flex-col items-center gap-0.5">
-        {items.map(item => (
-          <li key={item.nome_item} className="w-full h-12 flex items-center justify-between px-2 bg-zinc-100 rounded-[8px]">
-            <p className="text-zinc-600 text-sm font-bold">{item.nome_item}</p>
-            <button className="w-8 h-8 text-center text-zinc-600 text-sm font-bold cursor-pointer" onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item && i.quantidade > 0 ? { ...i, quantidade: i.quantidade - 1 } : i))}>
-              -
+  const clearCart = () => {
+    setItems?.([]);
+  };
+
+  const handleCreateOrder = async () => {
+    if (items.length === 0) return;
+    await createOrder();
+    setIsOpen(true);
+    setItems?.([]); // Clear cart after order
+  };
+
+  const getItemIcon = (name: string) => {
+    // Simple heuristic for icon
+    if (name.toLowerCase().includes('refrigerante') || name.toLowerCase().includes('suco') || name.toLowerCase().includes('água')) {
+        return <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center"><IconGlass size={20} className="text-gray-600" /></div>
+    }
+    return <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center"><IconPizza size={20} className="text-gray-600" /></div>
+  };
+
+  return (
+    <div className="w-full h-full bg-white p-6 flex flex-col border-l border-gray-100">
+      
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <IconShoppingCart className="text-[#ec4913]" size={28} />
+          <h2 className="text-xl font-bold text-gray-800 leading-tight">Resumo do<br/>Pedido</h2>
+        </div>
+        
+        {items.length > 0 && (
+            <button 
+                onClick={clearCart}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+            >
+                Limpar Pedido
             </button>
-            <input className="w-8 h-8 text-center text-zinc-600 text-sm font-bold" type="text" inputMode="numeric"
-            pattern="[0-9]*" value={item.quantidade} readOnly />
-            <button className="w-8 h-8 text-center text-zinc-600 text-sm font-bold cursor-pointer" onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item ? { ...i, quantidade: i.quantidade + 1 } : i))}>
-              +
-            </button>
-          </li>
-        ))}
-      </ul>
-      <div className="w-full h-12 flex items-center justify-between px-2 bg-zinc-100 rounded-[8px]">
-        <p className="text-zinc-600 text-sm font-bold">Total</p>
-        <p className="text-zinc-600 text-sm font-bold">R$ {items.reduce((acc, item) => acc + item.preco * item.quantidade, 0).toFixed(2)}</p>
+        )}
       </div>
 
-      <button className="w-full h-12 bg-zinc-600 text-white text-sm font-bold rounded-[8px] cursor-pointer" onClick={() => {
-        createOrder();
-        setIsOpen(true);
-        }}>
-        Finalizar pedido
-      </button>
+      {/* Items List */}
+      <div className="flex-grow overflow-y-auto pr-2 -mr-2 mb-6">
+        {items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-40 text-gray-400 text-sm">
+                <p>Seu carrinho está vazio.</p>
+            </div>
+        ) : (
+            <ul className="flex flex-col gap-6">
+            {items.map((item) => (
+                <li key={item.nome_item} className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                        {getItemIcon(item.nome_item)}
+                        <div>
+                            <p className="font-bold text-gray-800 text-sm">{item.nome_item}</p>
+                            {/* Assuming generic size for now as it's not in the model */}
+                            <p className="text-gray-400 text-xs">Tamanho: Padrão</p>
+                        </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                         <button 
+                            className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold hover:bg-gray-300 transition-colors cursor-pointer"
+                            onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item && i.quantidade > 0 ? { ...i, quantidade: i.quantidade - 1 } : i).filter(i => i.quantidade > 0))}
+                         >
+                            -
+                        </button>
+                        <span className="text-sm font-semibold w-4 text-center">{item.quantidade}</span>
+                        <button 
+                            className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold hover:bg-gray-300 transition-colors cursor-pointer"
+                            onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item ? { ...i, quantidade: i.quantidade + 1 } : i))}
+                        >
+                            +
+                        </button>
+                    </div>
+                </li>
+            ))}
+            </ul>
+        )}
+      </div>
 
-      <ModalComponent open={isOpen} onClose={() => {setIsOpen(false)}}>
-          <h1>Pedido Realizado!</h1>    
+      {/* Footer / Total */}
+      <div className="mt-auto border-t border-gray-100 pt-6">
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-gray-800 font-bold">Subtotal</p>
+          <p className="text-gray-800 font-bold">R$ {total.toFixed(2)}</p>
+        </div>
+
+        <button 
+          onClick={handleCreateOrder}
+          disabled={items.length === 0}
+          className="w-full h-12 bg-[#ec4913] hover:bg-[#d14010] text-white font-bold rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+        >
+          Finalizar Pedido
+        </button>
+      </div>
+
+      <ModalComponent open={isOpen} onClose={() => setIsOpen(false)}>
+        <div className="text-center p-4">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <IconPizza className="text-green-600" size={32} />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Pedido Realizado!</h2>
+            <p className="text-gray-500">Seu pedido foi enviado para a cozinha.</p>
+        </div>
       </ModalComponent>
     </div>
-  )
+  );
 }

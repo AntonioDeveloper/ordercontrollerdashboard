@@ -28,9 +28,9 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <OrdersProvider>
-          <main className="w-screen h-dvh bg-slate-800 flex">
+          <main className="w-screen h-screen bg-slate-800 flex overflow-hidden">
             <Menu />
-            <div className="w-5/6 h-screen flex flex-col justify-between">
+            <div className="flex-1 h-full flex flex-col overflow-hidden bg-[#F9F9F9]">
               <Content>{children}</Content>
               <Footer />
             </div>
