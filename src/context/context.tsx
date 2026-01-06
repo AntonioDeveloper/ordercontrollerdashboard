@@ -220,6 +220,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       }
       const newOrder = await response.json();
       setAllOrders(prev => [...prev, newOrder]);
+      setOrdersBoard(prev => [...prev, newOrder]);
     } catch (e) {
       console.error('[OrdersProvider] POST /api/createOrder error', e);
     }

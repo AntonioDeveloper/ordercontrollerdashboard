@@ -1,3 +1,5 @@
+import { MinicartItem } from './minicart';
+
 export interface OrderType {
   _id: string;
   cardId: string;
@@ -9,10 +11,12 @@ export interface OrderType {
     | 'Cancelado'
     | 'Pendente';
   endereco: string;
-  pedido: {
-    pizza_sabor: string;
-    tamanho?: 'Grande' | 'Média' | 'Pequena';
-    quantidade: number;
-    observacoes?: string;
-  };
+  pedido:
+    | {
+        pizza_sabor: string;
+        tamanho?: 'Grande' | 'Média' | 'Pequena';
+        quantidade: number;
+        observacoes?: string;
+      }
+    | MinicartItem[];
 }

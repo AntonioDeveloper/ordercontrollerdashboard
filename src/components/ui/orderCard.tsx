@@ -24,6 +24,11 @@ export default function OrderCard ({order, isDragging} : OrderCardProps) {
   const isDelivery = order.endereco && order.endereco.length > 0;
   const isPaid = order.status_pedido === 'Entregue';
   const timeMock = "10:30"; // Placeholder as we don't have timestamp in OrderType
+  const itemsText = Array.isArray(order.pedido)
+    ? order.pedido
+        .map(item => `${item.quantidade}x ${item.nome_item}${item.tamanho ? ` (${item.tamanho})` : ''}${item.observacoes ? ` - Obs: ${item.observacoes}` : ''}`)
+        .join(', ')
+    : `${order.pedido.quantidade}x ${order.pedido.pizza_sabor} (${order.pedido.tamanho})${order.pedido.observacoes ? ` - Obs: ${order.pedido.observacoes}` : ''}`;
 
   const cardContent = (
     <div className="w-full h-full p-4 flex flex-col justify-between">
@@ -40,8 +45,7 @@ export default function OrderCard ({order, isDragging} : OrderCardProps) {
       <div className="mb-3">
         <h3 className="font-bold text-gray-800 text-base mb-1">{order.nome_cliente}</h3>
         <p className="text-gray-500 text-sm line-clamp-2">
-          {order.pedido.quantidade}x {order.pedido.pizza_sabor} ({order.pedido.tamanho})
-          {order.pedido.observacoes && <span className="block text-xs italic mt-1 text-gray-400">Obs: {order.pedido.observacoes}</span>}
+          {itemsText}
         </p>
       </div>
 
