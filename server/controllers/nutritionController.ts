@@ -1,6 +1,5 @@
 'use server';
 
-import mongoose from 'mongoose';
 import MenuSchema from '../models/menu';
 import { analyzeLocally } from '../services/nutritionLocal';
 import https from 'https';

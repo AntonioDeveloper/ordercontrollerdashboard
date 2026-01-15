@@ -40,7 +40,14 @@ export default function LoginPage() {
         return;
       }
 
-      const result = await loginClient(telefone);
+      const normalizedPhone = telefone.replace(/\D/g, '');
+      if (!normalizedPhone) {
+        setErrorMessage("Por favor, informe um telefone válido (apenas números).");
+        setIsLoading(false);
+        return;
+      }
+
+      const result = await loginClient(normalizedPhone);
 
       if (typeof result === 'object' && result && 'ok' in result && !result.ok) {
         setErrorMessage(mapLoginError(result.status, result.errorMessage));
@@ -105,7 +112,7 @@ export default function LoginPage() {
             <input
               id="telefone"
               type="tel"
-              placeholder="(00) 00000-0000"
+              placeholder="Digite seu telefone com DDD (apenas números)"
               className="w-full h-12 px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ec4913] focus:border-transparent transition-all"
               value={telefone}
               onChange={(e) => setTelefone(e.target.value)}

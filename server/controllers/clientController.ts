@@ -3,6 +3,8 @@
 import ClientSchema from '../models/client';
 import mongoose from 'mongoose';
 
+const normalizePhone = (value: string) => value.replace(/\D/g, '');
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getAllClients = async (req: any, res: any) => {
   try {
@@ -140,10 +142,16 @@ export const signUpClient = async (req: any, res: any) => {
         errorMessage: 'Campos obrigatórios: nome_cliente, endereco, telefone.',
       });
     }
+    const normalizedPhone = normalizePhone(String(body.telefone));
+    if (!normalizedPhone) {
+      return res.status(400).json({
+        errorMessage: 'Telefone inválido.',
+      });
+    }
     const newClient = new ClientSchema({
       nome_cliente: body.nome_cliente,
       endereco: body.endereco,
-      telefone: body.telefone,
+      telefone: normalizedPhone,
     });
     await newClient.save();
     res.status(201).json(newClient);
@@ -173,8 +181,17 @@ export const loginClient = async (req: any, res: any) => {
   }
 
   try {
-    const currentClient = await ClientSchema.findOne({
-      telefone: telefone,
+    const normalizedPhone = normalizePhone(String(telefone));
+    if (!normalizedPhone) {
+      return res.status(400).json({
+        errorMessage: 'Telefone inválido.',
+      });
+    }
+
+    const allClients = await ClientSchema.find().lean().exec();
+    const currentClient = allClients.find((client: { telefone?: string }) => {
+      if (!client.telefone) return false;
+      return normalizePhone(String(client.telefone)) === normalizedPhone;
     });
 
     if (currentClient === null) {
