@@ -26,7 +26,8 @@ export function analyzeLocally(
   const bebidas = menuDoc?.bebidas ?? [];
 
   const findItemCal = (
-    nome: string
+    nome: string,
+    tamanho?: string
   ): { kcalPerUnit: number; category: 'pizza' | 'beverage' | 'unknown' } => {
     const findPizza = (arr: typeof pizzasSalgadas) =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,9 +37,19 @@ export function analyzeLocally(
       findPizza(pizzasDoces) ||
       findPizza(pizzasVegetarianas);
     if (ps) {
-      // Aproximação: 8 fatias por pizza
+      // Ajuste por tamanho: aproximação de fatias por pizza
+      const slicesMap: Record<string, number> = {
+        Grande: 12,
+        Média: 8,
+        Media: 8,
+        Pequena: 6,
+      };
+      const defaultSlices = 8;
+      const slices = tamanho
+        ? slicesMap[tamanho] ?? defaultSlices
+        : defaultSlices;
       const calPorFatia = ps.calorias_por_fatia_estimada;
-      const kcalPerUnit = calPorFatia != null ? calPorFatia * 8 : 800;
+      const kcalPerUnit = calPorFatia != null ? calPorFatia * slices : 800;
       return { kcalPerUnit, category: 'pizza' };
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,7 +57,9 @@ export function analyzeLocally(
     if (bev) {
       const calInformada = bev.calorias_por_fatia_estimada;
       const kcalPerUnit =
-        calInformada != null ? calInformada : fallbackBeverageCalories(bev.nome);
+        calInformada != null
+          ? calInformada
+          : fallbackBeverageCalories(bev.nome);
       return { kcalPerUnit, category: 'beverage' };
     }
     return { kcalPerUnit: 250, category: 'unknown' };
@@ -74,7 +87,7 @@ export function analyzeLocally(
   }
 
   const porItem = cartItems.map((ci) => {
-    const { kcalPerUnit } = findItemCal(ci.nome_item);
+    const { kcalPerUnit } = findItemCal(ci.nome_item, ci.tamanho);
     const kcalTotal = Math.round(kcalPerUnit * (ci.quantidade || 1));
     return {
       nome_item: ci.nome_item,

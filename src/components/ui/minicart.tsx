@@ -5,6 +5,7 @@ import { MinicartItem } from "@/model/minicart";
 import ModalComponent from "./modalComponent";
 import { useState } from "react";
 import { IconShoppingCart, IconTrash, IconPizza, IconGlass } from "@tabler/icons-react";
+import NutritionPanel from "./nutritionPanel";
 
 interface MinicartProps {
   items?: MinicartItem[];
@@ -14,6 +15,7 @@ interface MinicartProps {
 export default function Minicart({ items = [], setItems }: MinicartProps) {
   const { createOrder, currentClient } = useOrders();
   const [isOpen, setIsOpen] = useState(false);
+  const [showNutrition, setShowNutrition] = useState(false);
 
   const total = items.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
 
@@ -102,6 +104,15 @@ export default function Minicart({ items = [], setItems }: MinicartProps) {
           <p className="text-gray-800 font-bold">Subtotal</p>
           <p className="text-gray-800 font-bold">R$ {total.toFixed(2)}</p>
         </div>
+
+        <button
+          onClick={() => setShowNutrition((s) => !s)}
+          className="w-full mb-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium px-3 py-2 rounded-lg transition-colors shadow-sm"
+        >
+          {showNutrition ? "Ocultar Análise Nutricional" : "Mostrar Análise Nutricional"}
+        </button>
+
+        {showNutrition && <NutritionPanel />}
 
         <button 
           onClick={handleCreateOrder}

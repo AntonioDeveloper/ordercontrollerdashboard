@@ -53,7 +53,7 @@ export default function BeveragesPage() {
       </div>
 
       {/* Right Sidebar (Cart) */}
-      <div className="w-[400px] h-full bg-white shadow-xl z-10">
+      <div className="w-[400px] h-full flex flex-col bg-white shadow-xl z-10 overflow-y-auto">
         <Minicart items={cartItems} setItems={setCartItems} />
       </div>
     </div>
