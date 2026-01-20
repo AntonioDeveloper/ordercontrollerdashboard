@@ -3,6 +3,7 @@
 import { useOrders } from "@/context/context";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { IconX } from "@tabler/icons-react";
 
 export default function LoginPage() {
   const [telefone, setTelefone] = useState("");
@@ -98,7 +99,15 @@ export default function LoginPage() {
 
   return (
     <section className="w-full h-full flex items-center justify-center bg-[#F5F5F5] p-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md relative">
+        <button 
+          onClick={() => router.back()} 
+          className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+          aria-label="Fechar"
+        >
+          <IconX size={24} />
+        </button>
+
         <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-[#ec4913] mb-2">Login</h1>
             <p className="text-gray-500">Acesse para fazer seu pedido</p>

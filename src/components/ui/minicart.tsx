@@ -10,9 +10,11 @@ import NutritionPanel from "./nutritionPanel";
 interface MinicartProps {
   items?: MinicartItem[];
   setItems?: (items: MinicartItem[]) => void;
+  hideHeader?: boolean;
+  className?: string;
 }
 
-export default function Minicart({ items = [], setItems }: MinicartProps) {
+export default function Minicart({ items = [], setItems, hideHeader = false, className = "" }: MinicartProps) {
   const { createOrder, currentClient } = useOrders();
   const [isOpen, setIsOpen] = useState(false);
   const [showNutrition, setShowNutrition] = useState(false);
@@ -39,9 +41,10 @@ export default function Minicart({ items = [], setItems }: MinicartProps) {
   };
 
   return (
-    <div className="w-full h-full bg-white p-6 flex flex-col border-l border-gray-100">
+    <div className={`w-full h-full bg-white flex flex-col ${className ? className : 'p-6 border-l border-gray-100'}`}>
       
       {/* Header */}
+      {!hideHeader && (
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <IconShoppingCart className="text-[#ec4913]" size={28} />
@@ -57,6 +60,7 @@ export default function Minicart({ items = [], setItems }: MinicartProps) {
             </button>
         )}
       </div>
+      )}
 
       {/* Items List */}
       <div className="flex-grow overflow-y-auto pr-2 -mr-2 mb-6">

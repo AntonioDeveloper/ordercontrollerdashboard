@@ -2,7 +2,8 @@
 
 import {OrderType} from "@/model/orderType"
 import { IconMotorbike, IconBuildingStore, IconCreditCard, IconClock, IconChevronRight } from "@tabler/icons-react";
-import { useDraggable } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface OrderCardProps {
   order: OrderType;
@@ -124,14 +125,18 @@ export default function OrderCard ({order, onAdvance, enableDrag = false, isDrag
 }
 
 export function DraggableOrderCard({order, isDragging}: {order: OrderType, isDragging?: boolean}) {
-    const {attributes, listeners, setNodeRef, transform} = useDraggable({
-      id: order.cardId
+    const {attributes, listeners, setNodeRef, transform, transition} = useSortable({
+      id: order.cardId,
+      data: {
+        order
+      }
     });
   
-    const style = transform ? {
-      transform: `translate(${transform.x}px, ${transform.y}px)`,
+    const style = {
+      transform: CSS.Translate.toString(transform),
+      transition,
       zIndex: isDragging ? 999 : undefined,
-    } : undefined;
+    };
   
     return <OrderCard 
               order={order} 
