@@ -1,5 +1,6 @@
 'use client'
 import { useEffect } from 'react'
+import { IconX } from '@tabler/icons-react'
 
 type LoginClientModalProps = {
   open: boolean
@@ -29,9 +30,15 @@ export default function ModalComponent({ open, onClose, children }: LoginClientM
       <div
         role="dialog"
         aria-modal="true"
-        className="relative bg-white rounded p-4 shadow-lg w-[90vw] max-w-md"
+        className="relative bg-white rounded-xl p-6 pt-12 shadow-lg w-[90vw] max-w-md animate-in fade-in zoom-in duration-200"
       >
-        <button className="absolute top-2 right-2 cursor-pointer" onClick={onClose}>Fechar</button>
+        <button 
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100 z-10" 
+          onClick={onClose}
+          aria-label="Fechar"
+        >
+          <IconX size={20} />
+        </button>
         {children}
       </div>
     </div>

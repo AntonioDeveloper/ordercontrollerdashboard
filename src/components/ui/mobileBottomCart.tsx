@@ -7,7 +7,7 @@ import Minicart from "./minicart";
 import ModalComponent from "./modalComponent";
 
 export default function MobileBottomCart() {
-  const { cartItems, setCartItems, createOrder } = useOrders();
+  const { cartItems, setCartItems, createOrder, currentClient, setIsSignUpModalOpen } = useOrders();
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
@@ -17,10 +17,20 @@ export default function MobileBottomCart() {
   const itemCount = cartItems.reduce((acc, item) => acc + item.quantidade, 0);
 
   const handleFinalize = async () => {
-    await createOrder();
-    setCartItems([]);
-    setIsDetailsOpen(false);
-    setIsSuccessModalOpen(true);
+    if (!currentClient) {
+      setIsSignUpModalOpen(true);
+      return;
+    }
+    
+    const success = await createOrder();
+    
+    if (success) {
+      setCartItems([]);
+      setIsDetailsOpen(false);
+      setIsSuccessModalOpen(true);
+    } else {
+      alert("Erro ao criar o pedido. Por favor, tente novamente.");
+    }
   };
 
   return (

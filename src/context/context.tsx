@@ -43,7 +43,7 @@ type OrdersContextValue = {
   removeCartItem: (nome_item: string) => void;
   clearCart: () => void;
   getCartTotal: () => number;
-  createOrder: () => Promise<void>;
+  createOrder: () => Promise<boolean>;
   loginClient: (telefone: string) => Promise<SignUpClientResult>;
   logoutClient: () =>  Promise<void>;
   currentClient: ClientType | null;
@@ -221,13 +221,15 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       console.log("response", response);
       if (!response.ok) {
         console.error('[OrdersProvider] POST /api/clients failed', response.status, response.statusText);
-        return;
+        return false;
       }
       const newOrder = await response.json();
       setAllOrders(prev => [...prev, newOrder]);
       setOrdersBoard(prev => [...prev, newOrder]);
+      return true;
     } catch (e) {
       console.error('[OrdersProvider] POST /api/createOrder error', e);
+      return false;
     }
   };
 

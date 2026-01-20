@@ -15,7 +15,7 @@ interface MinicartProps {
 }
 
 export default function Minicart({ items = [], setItems, hideHeader = false, className = "" }: MinicartProps) {
-  const { createOrder, currentClient } = useOrders();
+  const { createOrder, currentClient, setIsSignUpModalOpen } = useOrders();
   const [isOpen, setIsOpen] = useState(false);
   const [showNutrition, setShowNutrition] = useState(false);
 
@@ -27,9 +27,19 @@ export default function Minicart({ items = [], setItems, hideHeader = false, cla
 
   const handleCreateOrder = async () => {
     if (items.length === 0) return;
-    await createOrder();
-    setIsOpen(true);
-    setItems?.([]); // Clear cart after order
+
+    if (!currentClient) {
+      setIsSignUpModalOpen(true);
+      return;
+    }
+
+    const success = await createOrder();
+    if (success) {
+      setIsOpen(true);
+      setItems?.([]); // Clear cart after order
+    } else {
+        alert("Erro ao criar o pedido. Por favor, tente novamente.");
+    }
   };
 
   const getItemIcon = (name: string) => {
@@ -62,43 +72,47 @@ export default function Minicart({ items = [], setItems, hideHeader = false, cla
       </div>
       )}
 
-      {/* Items List */}
+      {/* Items List or Nutrition Panel */}
       <div className="flex-grow overflow-y-auto pr-2 -mr-2 mb-6">
-        {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-40 text-gray-400 text-sm">
-                <p>Seu carrinho está vazio.</p>
-            </div>
+        {showNutrition ? (
+            <NutritionPanel />
         ) : (
-            <ul className="flex flex-col gap-6">
-            {items.map((item) => (
-                <li key={item.nome_item} className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                        {getItemIcon(item.nome_item)}
-                        <div>
-                            <p className="font-bold text-gray-800 text-sm">{item.nome_item}</p>
-                            {/* Assuming generic size for now as it's not in the model */}
-                            <p className="text-gray-400 text-xs">Tamanho: Padrão</p>
+            items.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-40 text-gray-400 text-sm">
+                    <p>Seu carrinho está vazio.</p>
+                </div>
+            ) : (
+                <ul className="flex flex-col gap-6">
+                {items.map((item) => (
+                    <li key={item.nome_item} className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                            {getItemIcon(item.nome_item)}
+                            <div>
+                                <p className="font-bold text-gray-800 text-sm">{item.nome_item}</p>
+                                {/* Assuming generic size for now as it's not in the model */}
+                                <p className="text-gray-400 text-xs">Tamanho: Padrão</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-3">
-                         <button 
-                            className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold hover:bg-gray-300 transition-colors cursor-pointer"
-                            onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item && i.quantidade > 0 ? { ...i, quantidade: i.quantidade - 1 } : i).filter(i => i.quantidade > 0))}
-                         >
-                            -
-                        </button>
-                        <span className="text-sm font-semibold w-4 text-center">{item.quantidade}</span>
-                        <button 
-                            className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold hover:bg-gray-300 transition-colors cursor-pointer"
-                            onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item ? { ...i, quantidade: i.quantidade + 1 } : i))}
-                        >
-                            +
-                        </button>
-                    </div>
-                </li>
-            ))}
-            </ul>
+                        
+                        <div className="flex items-center gap-3">
+                             <button 
+                                className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold hover:bg-gray-300 transition-colors cursor-pointer"
+                                onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item && i.quantidade > 0 ? { ...i, quantidade: i.quantidade - 1 } : i).filter(i => i.quantidade > 0))}
+                             >
+                                -
+                            </button>
+                            <span className="text-sm font-semibold w-4 text-center">{item.quantidade}</span>
+                            <button 
+                                className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold hover:bg-gray-300 transition-colors cursor-pointer"
+                                onClick={() => setItems?.(items.map(i => i.nome_item === item.nome_item ? { ...i, quantidade: i.quantidade + 1 } : i))}
+                            >
+                                +
+                            </button>
+                        </div>
+                    </li>
+                ))}
+                </ul>
+            )
         )}
       </div>
 
@@ -113,10 +127,8 @@ export default function Minicart({ items = [], setItems, hideHeader = false, cla
           onClick={() => setShowNutrition((s) => !s)}
           className="w-full mb-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium px-3 py-2 rounded-lg transition-colors shadow-sm"
         >
-          {showNutrition ? "Ocultar Análise Nutricional" : "Mostrar Análise Nutricional"}
+          {showNutrition ? "Voltar para Itens" : "Mostrar Análise Nutricional"}
         </button>
-
-        {showNutrition && <NutritionPanel />}
 
         <button 
           onClick={handleCreateOrder}
