@@ -1,9 +1,7 @@
-'use client'
-
+import { useDroppable } from "@dnd-kit/core";
 import { ColumnType } from "@/model/columnType";
 import { OrderType } from "@/model/orderType";
-import OrderCard from "./orderCard";
-import { useDroppable } from "@dnd-kit/core";
+import { DraggableOrderCard } from "./orderCard";
 
 interface ColumnProps {
   column: ColumnType;
@@ -64,7 +62,7 @@ export default function Column ({column, orders, activeOrder}: ColumnProps) {
   const badgeColorClass = getBadgeColor(column.id);
 
   return(
-    <div ref={setNodeRef} className="w-[350px] min-w-[350px] h-full max-h-full flex flex-col rounded-xl bg-white shadow-sm border border-gray-100 overflow-hidden">
+    <div ref={setNodeRef} className="w-[85vw] min-w-[85vw] md:w-[350px] md:min-w-[350px] h-full max-h-full flex flex-col rounded-xl bg-white shadow-sm border border-gray-100 overflow-hidden">
         {/* Header */}
         <div className={`p-4 border-b-4 ${borderColorClass} rounded-t-xl flex justify-between items-center bg-white shrink-0`}>
             <h2 className="font-bold text-gray-800 text-lg">{column.title}</h2>
@@ -76,7 +74,7 @@ export default function Column ({column, orders, activeOrder}: ColumnProps) {
         {/* Orders Container */}
         <div className="flex-1 p-3 overflow-y-auto min-h-0 space-y-3 bg-gray-50/50">
             {orders.map((order) => {
-                return <OrderCard key={order.cardId} order={order} isDragging={activeOrder?.cardId === order.cardId} />
+                return <DraggableOrderCard key={order.cardId} order={order} isDragging={activeOrder?.cardId === order.cardId} />
             })}
             {orders.length === 0 && (
                 <div className="text-center py-10 text-gray-400 text-sm">

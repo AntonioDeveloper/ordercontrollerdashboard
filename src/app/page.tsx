@@ -3,9 +3,9 @@
 import { useOrders } from "@/context/context";
 import SearchBar from "@/components/ui/searchBar";
 import ClientRow from "@/components/ui/clientRow";
-import SignUpClientsModal from "@/components/ui/signUpClientsModal";
-import { useEffect, useMemo, useState } from "react";
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import MobileClientCard from "@/components/ui/mobileClientCard";
+import { useMemo, useState } from "react";
+import { IconChevronLeft, IconChevronRight, IconPlus } from "@tabler/icons-react";
 
 export default function Home() {
   const {
@@ -14,16 +14,9 @@ export default function Home() {
     setQuery,
     query,
     foundClient,
-    signUpClient,
+    setIsSignUpModalOpen,
+    allOrders,
   } = useOrders();
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [nome, setNome] = useState("");
-  const [endereco, setEndereco] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [signUpDone, setSignUpDone] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const list = useMemo(() => {
     if (query && foundClient) return [foundClient];
@@ -45,47 +38,27 @@ export default function Home() {
     }
   };
 
-  const handleSubmit = async () => {
-    const payload = { nome_cliente: nome, endereco, telefone };
-    try {
-      setIsLoading(true);
-      const result = await signUpClient(payload);
-      if (typeof result === 'object' && result && !result.ok) {
-        setErrorMessage(result.errorMessage ?? null);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-        setSignUpDone(true);
-        setErrorMessage(null);
-        setTimeout(() => {
-          setIsOpen(false);
-          setSignUpDone(false);
-          setNome("");
-          setEndereco("");
-          setTelefone("");
-        }, 3000);
-      }
-    } catch {
-      setErrorMessage("Ocorreu um erro inesperado");
-      setIsLoading(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    setErrorMessage(null);
-  }, [isOpen]);
-
   return (
-    <section className="w-full h-full p-4">
-      <div className="flex items-center justify-between mb-4">
+    <section className="w-full h-full p-4 flex flex-col">
+      {/* Header Desktop */}
+      <div className="hidden md:flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Board de Clientes Cadastrados</h1>
         <button
-          className="bg-[#ec4913] text-white px-4 py-2 rounded-md cursor-pointer"
-          onClick={() => setIsOpen(true)}
+          className="bg-[#ec4913] text-white px-4 py-2 rounded-md cursor-pointer hover:bg-[#d14010] transition-colors"
+          onClick={() => setIsSignUpModalOpen(true)}
         >
           Adicionar Novo Cliente
+        </button>
+      </div>
+
+      {/* Header Mobile */}
+      <div className="md:hidden flex items-center justify-between mb-4">
+        <h1 className="text-xl font-bold text-gray-800">Meus Clientes</h1>
+        <button 
+          onClick={() => setIsSignUpModalOpen(true)}
+          className="bg-[#ec4913]/10 text-[#ec4913] p-2 rounded-lg"
+        >
+          <IconPlus size={20} />
         </button>
       </div>
 
@@ -93,9 +66,10 @@ export default function Home() {
         <SearchBar placeholder="Buscar por nome do cliente..." onChange={(e) => onSearch(e.target.value)} />
       </div>
 
-      <div className="w-full bg-white rounded-md border border-zinc-200">
+      {/* Desktop Table */}
+      <div className="hidden md:block w-full bg-white rounded-md border border-zinc-200 flex-1 overflow-auto">
         <table className="w-full text-left">
-          <thead className="bg-zinc-50">
+          <thead className="bg-zinc-50 sticky top-0">
             <tr>
               <th className="px-4 py-2 w-1/12">ID</th>
               <th className="px-4 py-2 w-3/12">Nome</th>
@@ -111,12 +85,25 @@ export default function Home() {
         </table>
       </div>
 
-      <div className="mt-3 flex items-center justify-between">
+      {/* Mobile List */}
+      <div className="md:hidden flex-1 overflow-y-auto pb-20">
+        {pageItems.map((client) => (
+          <MobileClientCard key={client._id} client={client} allOrders={allOrders} />
+        ))}
+        {pageItems.length === 0 && (
+          <div className="text-center text-gray-500 mt-10">
+            Nenhum cliente encontrado
+          </div>
+        )}
+      </div>
+
+      {/* Pagination */}
+      <div className="mt-3 flex items-center justify-between shrink-0">
         <p className="text-sm text-zinc-600">{rangeLabel}</p>
         <div className="flex items-center gap-2">
           <button
             aria-label="Página anterior"
-            className="px-2 py-1 rounded-md border border-zinc-300 text-zinc-700 disabled:opacity-50 cursor-pointer"
+            className="px-2 py-1 rounded-md border border-zinc-300 text-zinc-700 disabled:opacity-50 cursor-pointer bg-white"
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
           >
@@ -124,7 +111,7 @@ export default function Home() {
           </button>
           <button
             aria-label="Próxima página"
-            className="px-2 py-1 rounded-md border border-zinc-300 text-zinc-700 disabled:opacity-50 cursor-pointer"
+            className="px-2 py-1 rounded-md border border-zinc-300 text-zinc-700 disabled:opacity-50 cursor-pointer bg-white"
             onClick={() => setCurrentPage((p) => (end < total ? p + 1 : p))}
             disabled={end >= total}
           >
@@ -132,61 +119,6 @@ export default function Home() {
           </button>
         </div>
       </div>
-
-      <SignUpClientsModal
-        open={isOpen}
-        onClose={() => {
-          setIsOpen(false);
-          setErrorMessage(null);
-          setSignUpDone(false);
-        }}
-      >
-        {errorMessage === null ? (
-          <>
-            <h1 className="text-2xl font-bold">Cadastrar Novo Cliente</h1>
-            <form
-              className="w-full flex flex-col items-center gap-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit();
-              }}
-            >
-              <input
-                className="w-full h-12 px-4 border border-gray-300 rounded-md"
-                type="text"
-                placeholder="Nome"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
-              <input
-                className="w-full h-12 px-4 border border-gray-300 rounded-md"
-                type="text"
-                placeholder="Endereço"
-                value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
-              />
-              <input
-                className="w-full h-12 px-4 border border-gray-300 rounded-md"
-                type="text"
-                placeholder="Telefone"
-                value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
-              />
-              <button
-                className="w-full h-12 bg-[#ec4913] text-white px-4 py-2 rounded-md cursor-pointer"
-                type="submit"
-              >
-                {signUpDone === false ? "Cadastrar" : "Cadastro realizado!"}
-              </button>
-            </form>
-          </>
-        ) : (
-          <>
-            <h1 className="text-red-500 font-semibold">Falha no Cadastro</h1>
-            <p className="text-zinc-700">{errorMessage || ""}</p>
-          </>
-        )}
-      </SignUpClientsModal>
     </section>
   );
 }

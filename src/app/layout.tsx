@@ -4,6 +4,8 @@ import "./globals.css";
 import Menu from "@/components/ui/menu";
 import Content from "@/components/ui/content";
 import Footer from "@/components/ui/footer";
+import BottomMenu from "@/components/ui/bottomMenu";
+import SignUpManager from "@/components/ui/signUpManager";
 import { OrdersProvider } from "@/context/context";
 
 const geistSans = Geist({
@@ -28,12 +30,18 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <OrdersProvider>
-          <main className="w-screen h-screen bg-slate-800 flex overflow-hidden">
+          <main className="w-screen h-screen bg-slate-800 flex flex-col md:flex-row overflow-hidden">
             <Menu />
             <div className="flex-1 h-full flex flex-col overflow-hidden bg-[#F9F9F9]">
               <Content>{children}</Content>
-              <Footer />
+              <div className="md:hidden">
+                 <BottomMenu />
+              </div>
+              <div className="hidden md:block">
+                 <Footer />
+              </div>
             </div>
+            <SignUpManager />
           </main>
         </OrdersProvider>
       </body>

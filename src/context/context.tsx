@@ -51,6 +51,8 @@ type OrdersContextValue = {
   setQuery: (query: string) => void;
   fetchClient: (name: string) => Promise<fetchClientResult>;
   foundClient: ClientType | null;
+  isSignUpModalOpen: boolean;
+  setIsSignUpModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
@@ -74,6 +76,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   const [currentClient, setCurrentClient] = useState<ClientType | null>(null);
   const [query, setQuery] = useState("");
   const [foundClient, setFoundClient] = useState<ClientType | null>(null);
+  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
 
   // Minicart state
   const [cartItems, setCartItems] = useState<MinicartItem[]>([]);
@@ -456,6 +459,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     setQuery,
     fetchClient,
     foundClient,
+    isSignUpModalOpen,
+    setIsSignUpModalOpen,
   };
 
   return (
