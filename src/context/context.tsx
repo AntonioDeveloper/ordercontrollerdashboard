@@ -8,6 +8,8 @@ import { usePathname } from 'next/navigation';
 import { Root } from '@/model/menu';
 import { MinicartItem } from '@/model/minicart';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 type SignUpClientResult = { ok: true; client: ClientType } | { ok: false; status: number; statusText: string; errorMessage?: string } | string | undefined;
 
 type fetchClientResult = { ok: true; client: ClientType } | { ok: false; status: number; statusText: string; errorMessage?: string } | string | undefined;
@@ -97,7 +99,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   const fetchClients = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/clients');
+      const response = await fetch(`${API_URL}/api/clients`);
       if (!response.ok) {
         console.error('[OrdersProvider] GET /api/clients failed', response.status, response.statusText);
         setAllClients([]);
@@ -113,7 +115,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:3001/api/orders');
+      const response = await fetch(`${API_URL}/api/orders`);
       if (!response.ok) {
         console.error('[OrdersProvider] GET /api/orders failed', response.status, response.statusText);
         setAllOrders([]);
@@ -132,7 +134,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:3001/api/menu');
+      const response = await fetch(`${API_URL}/api/menu`);
       
       if (!response.ok) {
         console.error('[OrdersProvider] GET /api/menu failed', response.status, response.statusText);
@@ -159,7 +161,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   const updateOrderStatus = async (id: string, status: string) => {
     try {
-      const response = await fetch(`http://127.0.0.1:3001/api/orders/update/${id}`, {
+      const response = await fetch(`${API_URL}/api/orders/update/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status_pedido: status }),
@@ -197,7 +199,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     genCardIdCode();
 
     try {
-      const response = await fetch('http://localhost:3001/api/createOrder', {
+      const response = await fetch(`${API_URL}/api/createOrder`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -229,7 +231,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   const updateClientData = async (id: string, clientData: ClientType) => {
     console.log("Client Data CTX", clientData);
     try {
-      const response = await fetch(`http://127.0.0.1:3001/api/clients/update/${id}`, {
+      const response = await fetch(`${API_URL}/api/clients/update/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ clientData }),
@@ -373,7 +375,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   const loginClient = async (telefone: string): Promise<SignUpClientResult> => {
       try {
-        const response = await fetch('http://localhost:3001/api/loginClient', {
+        const response = await fetch(`${API_URL}/api/loginClient`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ telefone }),

@@ -51,7 +51,6 @@ export default function SaltyPizzasPage() {
             )}
         </div>
       </div>
-
       {/* Right Sidebar (Cart) */}
       <div className="w-[400px] h-full flex flex-col bg-white shadow-xl z-10 overflow-y-auto">
         <Minicart items={cartItems} setItems={setCartItems} />
