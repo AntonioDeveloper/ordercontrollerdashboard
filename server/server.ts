@@ -7,7 +7,7 @@ import route from './controllers/appRoutes';
 dotenv.config();
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 const connectionString = process.env.ATLAS_URL;
 if (!connectionString) {
   console.error('ATLAS_URL is not defined in your .env file');
