@@ -60,7 +60,28 @@ export default function OrdersBoard () {
     setActiveOrder(null);
     const {active, over} = event;
     if (!over) return;
-    moveOrder(active.id as string, over.id as string);
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    // 1. Se soltou diretamente na coluna (container vazio ou nas bordas)
+    if (columns.some(col => col.id === overId)) {
+      moveOrder(activeId, overId);
+      return;
+    }
+
+    // 2. Se soltou sobre outro card
+    const overOrder = ordersBoard.find((order) => order.cardId === overId);
+    if (overOrder) {
+      // Encontra a coluna correspondente ao status do pedido onde soltou
+      const targetColumn = columns.find(col => 
+        col.title === overOrder.status_pedido || col.id === overOrder.status_pedido
+      );
+      
+      if (targetColumn) {
+        moveOrder(activeId, targetColumn.id);
+      }
+    }
   }
 
   const filteredOrdersDesktop = ordersBoard.filter(order => 
