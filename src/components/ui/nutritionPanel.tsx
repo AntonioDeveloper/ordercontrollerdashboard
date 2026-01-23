@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useOrders } from '@/context/context';
 import { IconCheck, IconRefresh } from '@tabler/icons-react';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 type NutritionResult = {
   totalCalorias: number;
   porItem: { nome_item: string; quantidade: number; kcalTotal: number }[];
@@ -24,7 +26,7 @@ export default function NutritionPanel() {
       setLoading(true);
       setError(null);
       setResult(null);
-      const resp = await fetch('http://localhost:3001/api/analyzeNutrition', {
+      const resp = await fetch(`${API_URL}/api/analyzeNutrition`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cartItems, userWeight: weight }),
