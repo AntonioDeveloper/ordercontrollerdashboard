@@ -5,12 +5,11 @@ import Image from 'next/image';
 interface ProductCardProps {
   name: string;
   description: string;
-  price: number;
   imageSrc: string;
   onAdd: () => void;
 }
 
-export default function ProductCard({ name, description, price, imageSrc, onAdd }: ProductCardProps) {
+export default function ProductCard({ name, description, imageSrc, onAdd }: ProductCardProps) {
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full border border-gray-100">
       <div className="relative w-full h-40 mb-4 rounded-lg overflow-hidden">

@@ -61,6 +61,7 @@ export default function LoginPage() {
         // O estado currentClient será atualizado e o componente renderizará a tela de "Bem-vindo"
       }
     } catch (err) {
+      console.error(err);
       setErrorMessage("Ocorreu um erro inesperado.");
     } finally {
       setIsLoading(false);

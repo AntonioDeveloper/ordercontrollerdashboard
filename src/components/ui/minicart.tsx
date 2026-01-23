@@ -4,7 +4,7 @@ import { useOrders } from "@/context/context";
 import { MinicartItem } from "@/model/minicart";
 import ModalComponent from "./modalComponent";
 import { useState } from "react";
-import { IconShoppingCart, IconTrash, IconPizza, IconGlass } from "@tabler/icons-react";
+import { IconShoppingCart, IconPizza, IconGlass } from "@tabler/icons-react";
 import NutritionPanel from "./nutritionPanel";
 
 interface MinicartProps {

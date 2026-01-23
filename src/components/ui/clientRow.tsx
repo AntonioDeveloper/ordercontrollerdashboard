@@ -12,7 +12,6 @@ interface ClientRowProps {
 export default function ClientRow({ clients }: ClientRowProps) {
   // Edita somente a linha clicada
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingName, setEditingName] = useState<string>("");
   const [newData, setNewData] = useState<ClientType>({
     _id: "",
     nome_cliente: "",
@@ -38,10 +37,9 @@ export default function ClientRow({ clients }: ClientRowProps) {
       if (!newData._id) return;
       await updateClientData(newData._id, newData);
       setEditingId(null);
-      setEditingName("");
     }
     runUpdateClient();
-  }, [newData]);
+  }, [newData, updateClientData]);
  
   const singleClientArray: ClientType[] = [];
   if (query && foundClient) singleClientArray.push(foundClient);
@@ -63,7 +61,6 @@ export default function ClientRow({ clients }: ClientRowProps) {
                   name="nome_cliente"
                   type="text"
                   placeholder="Digite o nome do cliente"
-                  onChange={(e) => setEditingName(e.target.value)}
                   className="w-full border px-2 py-1 rounded"
                 />
               ) : (
@@ -75,7 +72,6 @@ export default function ClientRow({ clients }: ClientRowProps) {
                   name="endereco"
                   type="text"
                   placeholder="Digite o endereço do cliente"
-                  onChange={(e) => setEditingName(e.target.value)}
                   className="w-full border px-2 py-1 rounded"
                 />
               ) : (
@@ -86,7 +82,6 @@ export default function ClientRow({ clients }: ClientRowProps) {
                   name="telefone"
                   type="text"
                   placeholder="Digite o telefone do cliente"
-                  onChange={(e) => setEditingName(e.target.value)}
                   className="w-full border px-2 py-1 rounded"
                 />
               ) : (
@@ -105,7 +100,6 @@ export default function ClientRow({ clients }: ClientRowProps) {
                   } else {
                     // Inicia edição desta linha com o nome atual
                     setEditingId(client._id);
-                    setEditingName(client.nome_cliente);
                   }
                 }}
               >

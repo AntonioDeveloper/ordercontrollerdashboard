@@ -37,7 +37,6 @@ export default function BeveragesPage() {
                         key={beverage.nome}
                         name={beverage.nome}
                         description={beverage.ingredientes_principais.join(", ")}
-                        price={beverage.preco}
                         imageSrc="/img/generic-beverage.png"
                         onAdd={() => addToCart({nome_item: beverage.nome, quantidade: 1, preco: beverage.preco})}
                     />

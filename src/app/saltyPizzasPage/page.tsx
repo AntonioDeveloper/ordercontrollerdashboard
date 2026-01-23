@@ -59,7 +59,6 @@ export default function SaltyPizzasPage() {
                                 key={pizza.nome}
                                 name={pizza.nome}
                                 description={pizza.ingredientes_principais.join(", ")}
-                                price={pizza.preco}
                                 imageSrc="/img/generic-pizza.png"
                                 onAdd={() => addToCart({nome_item: pizza.nome, quantidade: 1, preco: pizza.preco})}
                             />

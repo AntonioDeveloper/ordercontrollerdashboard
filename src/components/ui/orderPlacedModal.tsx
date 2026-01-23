@@ -1,6 +1,5 @@
 'use client'
 import { useOrders } from "@/context/context"
-import { useEffect } from "react"
 import ModalComponent from "./modalComponent"
 import {useState} from "react";
 
