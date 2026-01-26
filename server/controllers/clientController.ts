@@ -8,45 +8,9 @@ const normalizePhone = (value: string) => value.replace(/\D/g, '');
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getAllClients = async (req: any, res: any) => {
   try {
-    const conn = mongoose.connection;
-    const dbName = conn?.db?.databaseName;
-    const modelName = ClientSchema.modelName;
-    const collectionName = ClientSchema.collection?.name;
-
-    // Log de diagnóstico
-    console.log('[getAllClients] DB:', dbName);
-    console.log('[getAllClients] Model:', modelName);
-    console.log('[getAllClients] Collection:', collectionName);
-
-    try {
-      const collections = await conn.db?.listCollections().toArray();
-      console.log(
-        '[getAllClients] Collections:',
-        collections?.map((c) => c.name)
-      );
-
-      // Contar documentos nas coleções comuns para diagnóstico
-      const ordersColCount = await conn.db
-        ?.collection('orders')
-        .countDocuments()
-        .catch(() => -1);
-      const clientsColCount = await conn.db
-        ?.collection('clients')
-        .countDocuments()
-        .catch(() => -1);
-      console.log('[getAllClients] orders count:', ordersColCount);
-      console.log('[getAllClients] clients count:', clientsColCount);
-    } catch (e) {
-      console.warn('[getAllClients] Unable to list collections:', e);
-    }
-
     const allOrdersData = await ClientSchema.find().lean().exec();
-    console.log('[getAllClients] Count:', allOrdersData?.length ?? 0);
-
-    // Sempre retorna 200 com array (vazio ou preenchido) para facilitar consumo no frontend
     return res.status(200).json(allOrdersData ?? []);
   } catch (error) {
-    console.error('[getAllClients] Error:', error);
     return res.status(500).json({ errorMessage: String(error) });
   }
 };
@@ -54,18 +18,8 @@ export const getAllClients = async (req: any, res: any) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getOneClient = async (req: any, res: any) => {
   try {
-    const conn = mongoose.connection;
-    const dbName = conn?.db?.databaseName;
-    const modelName = ClientSchema.modelName;
-    const collectionName = ClientSchema.collection?.name;
-
-    // Log de diagnóstico
-    console.log('[getOneClient] DB:', dbName);
-    console.log('[getOneClient] Model:', modelName);
-    console.log('[getOneClient] Collection:', collectionName);
-
     if (!req.body || Object.keys(req.body).length === 0) {
-      return res.status(400).json({ errorMessage: 'Query data is required' });
+      return res.status(400).json({ errorMessage: 'Missing data query' });
     }
 
     const name = req.body.query;
@@ -76,35 +30,28 @@ export const getOneClient = async (req: any, res: any) => {
 
     return res.status(200).json(foundClient ?? []);
   } catch (error) {
-    console.error('Error in updateOrder:', error);
+    console.error('Error data query:', error);
     res.status(500).json({ errorMessage: String(error) });
   }
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const updateClient = async (req: any, res: any) => {
-  console.log('=== updateClient function invoked ===');
-  console.log('Request body:', req.body);
-  console.log('Request params:', req.params);
-
   try {
     const id = req.params.id;
 
-    // Validate MongoDB ID format
+    // Valida o formato do ID com o Mongo DB
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ errorMessage: 'Invalid ID format' });
     }
-    // Validate request body
+
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).json({ errorMessage: 'Update data is required' });
     }
     const clientId = await ClientSchema.findById(id);
-    console.log('ID:', id);
-    console.log('Found client:', clientId);
 
     if (!clientId) {
-      console.log('Client not found for ID:', id);
-      return res.status(404).json({ errorMessage: 'Cliente não encontrado' });
+      return res.status(404).json({ errorMessage: 'Client not found' });
     }
     const updatedData = await ClientSchema.findByIdAndUpdate(
       id,
@@ -119,22 +66,16 @@ export const updateClient = async (req: any, res: any) => {
         new: true,
         runValidators: true,
         context: 'query',
-      }
+      },
     );
-    console.log('UpdatedData', updatedData);
     res.status(200).json(updatedData);
   } catch (error) {
-    console.error('Error in updateOrder:', error);
     res.status(500).json({ errorMessage: String(error) });
   }
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const signUpClient = async (req: any, res: any) => {
-  console.log('=== signUpClient function invoked ===');
-  console.log('Request body:', req.body);
-  console.log('Request params:', req.params);
-
   try {
     const body = req.body?.clientData;
     if (!body || !body.nome_cliente || !body.endereco || !body.telefone) {
@@ -156,7 +97,6 @@ export const signUpClient = async (req: any, res: any) => {
     await newClient.save();
     res.status(201).json(newClient);
   } catch (error) {
-    console.error('Error in signUpClient:', error);
     const msg = String((error as Error)?.message ?? error);
     const code = (error as { code?: number })?.code;
     if (code === 11000 || msg.includes('duplicate key')) {
@@ -168,14 +108,9 @@ export const signUpClient = async (req: any, res: any) => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const loginClient = async (req: any, res: any) => {
-  console.log('=== loginClient function invoked ===');
-  console.log('Request body:', req.body);
-  console.log('Request params:', req.params);
-
   const { telefone } = req.body;
 
   if (!telefone) {
-    console.log('Telefone nulo.');
     res.status(400).json({ errorMessage: 'Telefone nulo, dado obrigatório.' });
     return;
   }
@@ -204,7 +139,7 @@ export const loginClient = async (req: any, res: any) => {
   } catch (error) {
     console.error(
       'Telefone não fornecido ou não encontrado. Por favor, verifique:',
-      error
+      error,
     );
     res.status(500).json({ errorMessage: 'Erro interno do servidor.' });
   }
