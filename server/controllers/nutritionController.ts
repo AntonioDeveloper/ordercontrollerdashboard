@@ -2,7 +2,6 @@
 
 import MenuSchema from '../models/menu';
 import { analyzeLocally } from '../services/nutritionLocal';
-import https from 'https';
 
 type CartItem = {
   nome_item: string;
@@ -26,7 +25,7 @@ export const analyzeNutrition = async (req: any, res: any) => {
     const menuDoc = await MenuSchema.findOne().lean().exec();
     if (!menuDoc) {
       console.warn(
-        '[analyzeNutrition] Menu não encontrado, usando estimativas padrão.'
+        '[analyzeNutrition] Menu não encontrado, usando estimativas padrão.',
       );
     }
 
@@ -69,41 +68,30 @@ export const analyzeNutrition = async (req: any, res: any) => {
         temperature: 0.6,
       };
 
-      const requestBody = JSON.stringify(payload);
-
-      const options: https.RequestOptions = {
-        hostname: 'api.groq.com',
-        path: '/openai/v1/chat/completions',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${groqApiKey}`,
-          'Content-Length': Buffer.byteLength(requestBody),
+      const response = await fetch(
+        'https://api.groq.com/openai/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${groqApiKey}`,
+          },
+          body: JSON.stringify(payload),
         },
-      };
+      );
 
-      const groqResponse = await new Promise<string>((resolve, reject) => {
-        const reqGroq = https.request(options, (resGroq) => {
-          let data = '';
-          resGroq.on('data', (chunk) => {
-            data += chunk;
-          });
-          resGroq.on('end', () => {
-            resolve(data);
-          });
-        });
+      if (!response.ok) {
+        throw new Error(`Groq API error: ${response.statusText}`);
+      }
 
-        reqGroq.on('error', (err) => {
-          reject(err);
-        });
+      const groqResponse = await response.text();
 
-        reqGroq.write(requestBody);
-        reqGroq.end();
-      });
+      const aiResult: {
+        observacoes?: string;
+        sugestoes?: string[];
+        dicasSuavizar?: string[];
+      } = {};
 
-      let groqObservacoes = localResult.observacoes;
-      let groqSugestoesExtra: string[] | null = null;
-      let groqDicasExtra: string[] | null = null;
       try {
         const parsed = JSON.parse(groqResponse);
         const content = parsed?.choices?.[0]?.message?.content ?? '';
@@ -111,76 +99,73 @@ export const analyzeNutrition = async (req: any, res: any) => {
           try {
             // Tenta limpar markdown ou extrair apenas o JSON
             let cleanedContent = content.trim();
-            // Remove blocos de código markdown se existirem (ex: ```json ... ```)
+            // Remove blocos de código markdown se existirem
             if (cleanedContent.includes('```')) {
               cleanedContent = cleanedContent
                 .replace(/```json/g, '')
                 .replace(/```/g, '');
             }
 
-            // Busca o primeiro '{' e o último '}' para garantir que pegamos apenas o objeto JSON
+            // Usado para garantir que pegamos apenas o objeto JSON
             const firstBrace = cleanedContent.indexOf('{');
             const lastBrace = cleanedContent.lastIndexOf('}');
 
             if (firstBrace !== -1 && lastBrace !== -1) {
               cleanedContent = cleanedContent.substring(
                 firstBrace,
-                lastBrace + 1
+                lastBrace + 1,
               );
             }
 
             const ai = JSON.parse(cleanedContent);
+
             if (typeof ai.observacoes === 'string') {
-              groqObservacoes = ai.observacoes;
+              aiResult.observacoes = ai.observacoes;
             }
             if (Array.isArray(ai.sugestoes)) {
-              groqSugestoesExtra = ai.sugestoes.filter(
-                (s: unknown) => typeof s === 'string'
+              aiResult.sugestoes = ai.sugestoes.filter(
+                (s: unknown) => typeof s === 'string',
               );
             }
             if (Array.isArray(ai.dicas_suavizar)) {
-              groqDicasExtra = ai.dicas_suavizar.filter(
-                (s: unknown) => typeof s === 'string'
+              aiResult.dicasSuavizar = ai.dicas_suavizar.filter(
+                (s: unknown) => typeof s === 'string',
               );
             }
           } catch (e) {
             console.warn(
               '[analyzeNutrition] Conteúdo do Groq não é JSON válido, tentando extração manual:',
-              e
+              e,
             );
-
-            // Tentativa de fallback com regex para salvar pelo menos as observações
-            // Procura por "observacoes": "..." (considerando escapes)
+            // Fallback manual para observacoes se o JSON falhar
             const obsMatch = content.match(
-              /"observacoes"\s*:\s*"((?:[^"\\]|\\.)*)"/
+              /"observacoes"\s*:\s*"((?:[^"\\]|\\.)*)"/,
             );
             if (obsMatch && obsMatch[1]) {
-              groqObservacoes = obsMatch[1];
-            } else {
-              // Se falhar tudo, mantém o local
-              groqObservacoes = localResult.observacoes;
+              aiResult.observacoes = obsMatch[1];
             }
           }
         }
       } catch (e) {
         console.warn(
           '[analyzeNutrition] Falha ao fazer parse da resposta do Groq:',
-          e
+          e,
         );
-        groqObservacoes = localResult.observacoes;
       }
 
+      // Fallback com dados locais (caso a IA falhe)
       return res.status(200).json({
-        ...localResult,
-        observacoes: groqObservacoes,
-        sugestoes: groqSugestoesExtra || localResult.sugestoes,
-        dicasSuavizar: groqDicasExtra || localResult.dicasSuavizar,
-        source: localResult.source,
+        totalCalorias: localResult.totalCalorias,
+        porItem: localResult.porItem,
+        observacoes: aiResult.observacoes || localResult.observacoes,
+        sugestoes: aiResult.sugestoes || localResult.sugestoes,
+        dicasSuavizar: aiResult.dicasSuavizar || localResult.dicasSuavizar,
+        source: aiResult.observacoes ? 'ai' : localResult.source,
       });
     } catch (e) {
       console.error(
         '[analyzeNutrition] Erro ao chamar Groq, usando apenas resultado local:',
-        e
+        e,
       );
       return res.status(200).json(localResult);
     }
