@@ -8,7 +8,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 type NutritionResult = {
   totalCalorias: number;
-  porItem: { nome_item: string; quantidade: number; kcalTotal: number }[];
+  porItem: { nome: string; quantidade: number; subtotal: number }[];
   sugestoes: string[];
   dicasSuavizar: string[];
   observacoes: string;
@@ -99,9 +99,9 @@ export default function NutritionPanel() {
             <p className="font-semibold text-gray-700 mb-1">Detalhes:</p>
             <ul className="space-y-1 text-gray-600">
               {result.porItem.map((i) => (
-                <li key={i.nome_item} className="flex justify-between items-center border-b border-gray-50 pb-1 last:border-0">
-                  <span className="truncate pr-2">{i.quantidade}x {i.nome_item}</span>
-                  <span className="whitespace-nowrap font-medium">{i.kcalTotal} kcal</span>
+                <li key={i.nome} className="flex justify-between items-center border-b border-gray-50 pb-1 last:border-0">
+                  <span className="truncate pr-2">{i.quantidade}x {i.nome}</span>
+                  <span className="whitespace-nowrap font-medium">{i.subtotal} kcal</span>
                 </li>
               ))}
             </ul>

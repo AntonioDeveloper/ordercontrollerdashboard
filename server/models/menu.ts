@@ -1,20 +1,20 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface ItemPizza {
+export interface ItemPizza {
   nome: string;
   ingredientes_principais: string[];
   preco: number;
   calorias_por_fatia_estimada: number;
 }
 
-interface ItemBeverage {
+export interface ItemBeverage {
   nome: string;
   ingredientes_principais: string[];
   preco: number;
   calorias_por_fatia_estimada: number;
 }
 
-interface CompleteMenu extends Document {
+export interface CompleteMenu extends Document {
   pizzas_salgadas: ItemPizza[];
   pizzas_doces: ItemPizza[];
   pizzas_vegetarianas: ItemPizza[];

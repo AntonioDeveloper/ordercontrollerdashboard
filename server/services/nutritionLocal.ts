@@ -6,19 +6,26 @@ type CartItem = {
   tamanho?: string;
 };
 
+import { CompleteMenu } from '../models/menu';
+
 type NutritionResult = {
   totalCalorias: number;
-  porItem: { nome_item: string; quantidade: number; kcalTotal: number }[];
+  porItem: {
+    nome: string;
+    caloriasUnitarias: number;
+    quantidade: number;
+    subtotal: number;
+    category: 'pizza' | 'beverage' | 'unknown';
+  }[];
+  observacoes: string;
   sugestoes: string[];
   dicasSuavizar: string[];
-  observacoes: string;
-  source: 'local';
+  source: 'local' | 'ai';
 };
 
 export function analyzeLocally(
   cartItems: CartItem[],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  menuDoc: any
+  menuDoc: CompleteMenu | null,
 ): NutritionResult {
   const pizzasSalgadas = menuDoc?.pizzas_salgadas ?? [];
   const pizzasDoces = menuDoc?.pizzas_doces ?? [];
@@ -27,17 +34,16 @@ export function analyzeLocally(
 
   const findItemCal = (
     nome: string,
-    tamanho?: string
+    tamanho?: string,
   ): { kcalPerUnit: number; category: 'pizza' | 'beverage' | 'unknown' } => {
     const findPizza = (arr: typeof pizzasSalgadas) =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       arr.find((i: any) => i.nome === nome);
-    const ps =
+    const foundPizza =
       findPizza(pizzasSalgadas) ||
       findPizza(pizzasDoces) ||
       findPizza(pizzasVegetarianas);
-    if (ps) {
-      // Ajuste por tamanho: aproximação de fatias por pizza
+    if (foundPizza) {
       const slicesMap: Record<string, number> = {
         Grande: 12,
         Média: 8,
@@ -46,9 +52,9 @@ export function analyzeLocally(
       };
       const defaultSlices = 8;
       const slices = tamanho
-        ? slicesMap[tamanho] ?? defaultSlices
+        ? (slicesMap[tamanho] ?? defaultSlices)
         : defaultSlices;
-      const calPorFatia = ps.calorias_por_fatia_estimada;
+      const calPorFatia = foundPizza.calorias_por_fatia_estimada;
       const kcalPerUnit = calPorFatia != null ? calPorFatia * slices : 800;
       return { kcalPerUnit, category: 'pizza' };
     }
@@ -67,36 +73,38 @@ export function analyzeLocally(
 
   function fallbackBeverageCalories(nomeBebida: string): number {
     const n = nomeBebida.toLowerCase();
-    // Água (com ou sem gás) deve ser 0 kcal
+
     if (/agua|água/.test(n)) return 0;
     if (/sem gás|com gás/.test(n) && /agua|água/.test(n)) return 0;
-    // Refrigerantes zero/diet/light geralmente ~0 kcal
+
     if (/zero|diet|light/.test(n)) return 0;
-    // Sucos
+
     if (/suco/.test(n)) return 110;
-    // Refrigerantes comuns
+
     if (/refrigerante|cola|guaraná|lima|limão/.test(n)) return 150;
-    // Cerveja
+
     if (/cerveja|beer|chopp/.test(n)) return 150;
-    // Energético
+
     if (/energético|energy/.test(n)) return 110;
-    // Café/Chá sem açúcar
+
     if (/cafe|café|chá/.test(n)) return 5;
-    // Padrão genérico
+
     return 150;
   }
 
   const porItem = cartItems.map((ci) => {
-    const { kcalPerUnit } = findItemCal(ci.nome_item, ci.tamanho);
-    const kcalTotal = Math.round(kcalPerUnit * (ci.quantidade || 1));
+    const { kcalPerUnit, category } = findItemCal(ci.nome_item, ci.tamanho);
+    const subtotal = Math.round(kcalPerUnit * (ci.quantidade || 1));
     return {
-      nome_item: ci.nome_item,
+      nome: ci.nome_item,
+      caloriasUnitarias: kcalPerUnit,
       quantidade: ci.quantidade || 1,
-      kcalTotal,
+      subtotal,
+      category,
     };
   });
 
-  const totalCalorias = porItem.reduce((acc, i) => acc + i.kcalTotal, 0);
+  const totalCalorias = porItem.reduce((acc, i) => acc + i.subtotal, 0);
 
   const sugestoes: string[] = [];
   if (totalCalorias > 1200) {
@@ -106,17 +114,17 @@ export function analyzeLocally(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (a: any, b: any) =>
       (a.calorias_por_fatia_estimada ?? 0) -
-      (b.calorias_por_fatia_estimada ?? 0)
+      (b.calorias_por_fatia_estimada ?? 0),
   )[0];
   if (vegetarianaMaisLeve) {
     sugestoes.push(
-      `Trocar por pizza vegetariana (${vegetarianaMaisLeve.nome}) para reduzir calorias.`
+      `Trocar por pizza vegetariana (${vegetarianaMaisLeve.nome}) para reduzir calorias.`,
     );
   }
   const agua = bebidas.find(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (b: any) =>
-      /agua/i.test(b.nome) || (b.calorias_por_fatia_estimada ?? 0) === 0
+      /agua/i.test(b.nome) || (b.calorias_por_fatia_estimada ?? 0) === 0,
   );
   const possuiBebidaCalorica = cartItems.some((ci) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
