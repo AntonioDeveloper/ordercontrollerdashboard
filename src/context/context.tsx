@@ -102,6 +102,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // Busca todos os clientes
   const fetchClients = async () => {
     try {
       const response = await fetch(`${API_URL}/api/clients`);
@@ -351,6 +352,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Busca cliente específico
   const fetchClient = async (query: string): Promise<fetchClientResult> => {
     try {
       const response = await fetch(`${API_URL}/api/clients/fetchClient`, {
