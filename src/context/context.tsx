@@ -8,6 +8,8 @@ import { usePathname } from 'next/navigation';
 import { Root } from '@/model/menu';
 import { MinicartItem } from '@/model/minicart';
 
+// Essa variável está configurada de forma que funcione mesmo se
+// a variável de ambiente em produção ainda não tiver sido configurada
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 type SignUpClientResult = { ok: true; client: ClientType } | { ok: false; status: number; statusText: string; errorMessage?: string } | string | undefined;
@@ -272,7 +274,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         signal,
       });
 
-      
+      // Identifica o tipo de resposta do servidor para
+      // decidir a forma de acessar a mensagem de erro
       if (!response.ok) {
         const ct = response.headers.get('content-type') || ''
         
@@ -306,7 +309,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Minicart API implementations
+  // Minicart
   const addToCart = (item: MinicartItem) => {
     setCartItems(prev => {
       const existing = prev.find(i => i.nome_item === item.nome_item);
@@ -350,7 +353,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   const fetchClient = async (query: string): Promise<fetchClientResult> => {
     try {
-      const response = await fetch('http://localhost:3001/api/clients/fetchClient', {
+      const response = await fetch(`${API_URL}/api/clients/fetchClient`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({query})
