@@ -36,14 +36,13 @@ export default function Minicart({ items = [], setItems, hideHeader = false, cla
     const success = await createOrder();
     if (success) {
       setIsOpen(true);
-      setItems?.([]); // Clear cart after order
+      setItems?.([]); 
     } else {
         alert("Erro ao criar o pedido. Por favor, tente novamente.");
     }
   };
 
   const getItemIcon = (name: string) => {
-    // Simple heuristic for icon
     if (name.toLowerCase().includes('refrigerante') || name.toLowerCase().includes('suco') || name.toLowerCase().includes('água')) {
         return <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center"><IconGlass size={20} className="text-gray-600" /></div>
     }
@@ -72,7 +71,7 @@ export default function Minicart({ items = [], setItems, hideHeader = false, cla
       </div>
       )}
 
-      {/* Items List or Nutrition Panel */}
+      {/* Lista de itens e Painel da Análise Nutricional */}
       <div className="flex-grow overflow-y-auto pr-2 -mr-2 mb-6">
         {showNutrition ? (
             <NutritionPanel />
@@ -89,7 +88,6 @@ export default function Minicart({ items = [], setItems, hideHeader = false, cla
                             {getItemIcon(item.nome_item)}
                             <div>
                                 <p className="font-bold text-gray-800 text-sm">{item.nome_item}</p>
-                                {/* Assuming generic size for now as it's not in the model */}
                                 <p className="text-gray-400 text-xs">Tamanho: Padrão</p>
                             </div>
                         </div>

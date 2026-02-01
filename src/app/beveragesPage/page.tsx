@@ -17,10 +17,10 @@ export default function BeveragesPage() {
 
   return (
     <div className="w-full h-full flex bg-[#F9F9F9]">
-      {/* Main Content Area */}
+
       <div className="flex-grow h-full flex flex-col p-8 overflow-hidden">
         
-        {/* Header / Search */}
+        {/* Header / Busca */}
         <div className="w-full max-w-3xl mb-8">
             <SearchBar 
                 placeholder="Buscar Bebida..." 
@@ -28,7 +28,7 @@ export default function BeveragesPage() {
             />
         </div>
 
-        {/* Product Grid */}
+        {/* Tabela de Produtos */}
         <div className="flex-grow overflow-y-auto pr-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8">
             {
@@ -51,7 +51,7 @@ export default function BeveragesPage() {
         </div>
       </div>
 
-      {/* Right Sidebar (Cart) */}
+      {/* Minicart (Lado Direito) */}
       <div className="w-[400px] h-full flex flex-col bg-white shadow-xl z-10 overflow-y-auto">
         <Minicart items={cartItems} setItems={setCartItems} />
       </div>

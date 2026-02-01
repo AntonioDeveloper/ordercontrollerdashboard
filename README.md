@@ -1,6 +1,7 @@
 # PizzaDash 🍕
 
-O PizzaDash é uma aplicação web completa para gerenciamento de pedidos de uma pizzaria. O projeto consiste em um dashboard interativo para clientes realizarem pedidos e um sistema de backend para processamento.
+O PizzaDash é uma aplicação web completa para gerenciamento de pedidos de uma pizzaria. O projeto consiste em um dashboard interativo para clientes realizarem pedidos e um sistema de backend para processamento. Possui também a funcionalidade que 
+calcula a quantidade de calorias e sugere formas de atenuar o excesso de calorias dos produtos.
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -13,6 +14,8 @@ O PizzaDash é uma aplicação web completa para gerenciamento de pedidos de uma
 ### Backend
 - **Node.js & Express**: Servidor API RESTful.
 - **MongoDB & Mongoose**: Banco de dados NoSQL e modelagem de dados.
+- **IA**: Groq Cloud (Llama 3.3 70b)
+- **Deploy**: Vercel (Frontend), Render/Railway (Backend)
 - **TypeScript**: Backend totalmente tipado.
 
 ## 📋 Funcionalidades
@@ -21,7 +24,8 @@ O PizzaDash é uma aplicação web completa para gerenciamento de pedidos de uma
 - **Carrinho de Compras**: Adição e remoção de itens, cálculo de total.
 - **Gestão de Clientes**: Cadastro e Login simplificado (apenas telefone).
 - **Pedidos**: Criação e acompanhamento de pedidos em tempo real (Board de Pedidos).
-- **Responsividade**: (Em desenvolvimento) Interface adaptável para diferentes dispositivos.
+- **Responsividade**: Interface adaptável para diferentes dispositivos.
+- **Análise Nutricional**: calcula a quantidade de calorias e sugere formas de atenuar o excesso de calorias dos produtos.
 
 ## 🛠️ Configuração e Instalação
 
@@ -99,7 +103,7 @@ A API retorna erros em formato JSON com a propriedade `errorMessage`.
   - Requer lista de itens com `nome_item`, `quantidade` e `preco`.
 - `POST /api/analyzeNutrition`: Realiza análise nutricional do carrinho.
   - Body: `{ cartItems: [...] }`
-  - Retorna calorias totais, detalhamento por item e sugestões (locais ou via IA).
+  - Retorna calorias totais e sugestões (locais ou via IA).
 
 ## 📁 Estrutura do Projeto
 

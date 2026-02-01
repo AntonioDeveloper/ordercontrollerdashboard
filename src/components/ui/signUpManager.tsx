@@ -14,12 +14,12 @@ export default function SignUpManager() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Reset fields when modal opens
+  // Limpa os inputs de formulário quando o modal estiver aberto
   useEffect(() => {
     if (isSignUpModalOpen) {
       setErrorMessage(null);
       setSuccessMessage(null);
-      setMode('login'); // Default to login when opening
+      setMode('login');
       setNome("");
       setEndereco("");
       setTelefone("");
@@ -83,7 +83,7 @@ export default function SignUpManager() {
   return (
     <SignUpClientsModal open={isSignUpModalOpen} onClose={() => setIsSignUpModalOpen(false)}>
       <div className="flex flex-col gap-4">
-        {/* Tabs */}
+        {/* Abas */}
         <div className="flex border-b border-gray-200 mb-2">
             <button 
                 className={`flex-1 pb-2 text-center font-medium ${mode === 'login' ? 'text-[#ec4913] border-b-2 border-[#ec4913]' : 'text-gray-500'}`}

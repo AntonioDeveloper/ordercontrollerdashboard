@@ -15,12 +15,12 @@ export default function SaltyPizzasPage() {
   const [filter, setFilter] = useState("");
   const [activeTab, setActiveTab] = useState<'salty' | 'sweet' | 'beverages'>('salty');
 
-  // Desktop filtering (keeps existing logic for desktop view which is Salty Pizzas only)
+ // Filtro de produtos desktop
   const filteredPizzas = salty_pizzas.filter(p => 
     p.nome.toLowerCase().includes(filter.toLowerCase())
   );
 
-  // Mobile filtering
+  // Filtro de produtos desktop mobile
   const getCurrentMobileItems = () => {
     switch(activeTab) {
         case 'salty': return salty_pizzas;
@@ -37,12 +37,12 @@ export default function SaltyPizzasPage() {
 
   return (
     <>
-        {/* Desktop View - Hidden on Mobile */}
+        {/* Desktop */}
         <div className="hidden md:flex w-full h-full bg-[#F9F9F9]">
-            {/* Main Content Area */}
+            {/* Conteúdo principal */}
             <div className="flex-grow h-full flex flex-col p-8 overflow-hidden">
                 
-                {/* Header / Search */}
+                {/* Header / Busca */}
                 <div className="w-full max-w-3xl mb-8">
                     <SearchBar 
                         placeholder="Buscar Produto..." 
@@ -50,7 +50,7 @@ export default function SaltyPizzasPage() {
                     />
                 </div>
 
-                {/* Product Grid */}
+                {/* Grade de Produtos */}
                 <div className="flex-grow overflow-y-auto pr-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8">
                     {
@@ -72,13 +72,13 @@ export default function SaltyPizzasPage() {
                     )}
                 </div>
             </div>
-            {/* Right Sidebar (Cart) */}
+            {/* Minicart (Lado Direito) */}
             <div className="w-[400px] h-full flex flex-col bg-white shadow-xl z-10 overflow-y-auto">
                 <Minicart items={cartItems} setItems={setCartItems} />
             </div>
         </div>
 
-        {/* Mobile View - Visible only on Mobile */}
+        {/* Mobile */}
         <div className="md:hidden w-full h-full flex flex-col bg-gray-50">
              {/* Header */}
              <div className="bg-white p-4 pb-2">
@@ -93,7 +93,7 @@ export default function SaltyPizzasPage() {
                 <SearchBar placeholder="O que você procura hoje?" onChange={(e) => setFilter(e.target.value)} />
              </div>
 
-             {/* Tabs */}
+             {/* Guias */}
              <div className="bg-white px-4 pb-0 flex gap-6 overflow-x-auto no-scrollbar border-b border-gray-100 sticky top-0 z-10">
                 <button
                    onClick={() => setActiveTab('salty')}
@@ -118,7 +118,7 @@ export default function SaltyPizzasPage() {
                 </button>
              </div>
 
-             {/* List */}
+             {/* Lista de Produtos */}
              <div className="flex-1 overflow-y-auto p-4 pb-32">
                 <div className="flex flex-col">
                    {filteredMobileItems.map(item => (

@@ -14,7 +14,7 @@ export default function OrdersBoard () {
   const [filter, setFilter] = useState("");
   const [activeTab, setActiveTab] = useState("PENDENTE");
 
-  // --- Mobile Logic (Tabs) ---
+  // Lógica de cards (mobile)
   const tabs = [
     { id: "PENDENTE", label: "PENDENTE", statuses: ["PENDENTE", "Pendente"] },
     { id: "EM_PREPARACAO", label: "EM PREPARAÇÃO", statuses: ["EM_PREPARACAO", "Em preparação"] },
@@ -50,7 +50,7 @@ export default function OrdersBoard () {
     }
   };
 
-  // --- Desktop Logic (DnD) ---
+  // Lógica de cards Desktop
   function handleDragStart(event: DragStartEvent) {
     const order = ordersBoard.find((order) => order.cardId === event.active.id);
     if (order) setActiveOrder(order);
@@ -64,13 +64,13 @@ export default function OrdersBoard () {
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    // 1. Se soltou diretamente na coluna (container vazio ou nas bordas)
+    // Se soltou diretamente na coluna (container vazio ou nas bordas)
     if (columns.some(col => col.id === overId)) {
       moveOrder(activeId, overId);
       return;
     }
 
-    // 2. Se soltou sobre outro card
+    // Se soltou sobre outro card
     const overOrder = ordersBoard.find((order) => order.cardId === overId);
     if (overOrder) {
       // Encontra a coluna correspondente ao status do pedido onde soltou
@@ -120,7 +120,7 @@ export default function OrdersBoard () {
         </div>
       </div>
 
-      {/* MOBILE CONTENT (Tabs + List) */}
+      {/*Conteúdo mobile (Tabs + List) */}
       <div className="md:hidden flex-1 w-full min-h-0 flex flex-col overflow-hidden">
         {/* Tabs */}
         <div className="w-full bg-white border-b border-gray-200 flex overflow-x-auto shrink-0 no-scrollbar">
@@ -144,7 +144,7 @@ export default function OrdersBoard () {
             ))}
         </div>
 
-        {/* Orders List */}
+        {/* Lista de Pedidos */}
         <div className="flex-1 w-full min-h-0 px-4 py-4 overflow-y-auto bg-gray-50">
             <div className="flex flex-col gap-4 max-w-3xl mx-auto">
             {filteredOrdersMobile.length > 0 ? (
@@ -164,7 +164,7 @@ export default function OrdersBoard () {
         </div>
       </div>
 
-      {/* DESKTOP CONTENT (Kanban Board) */}
+      {/* Conteúdo Desktop (Kanban) */}
       <div className="hidden md:flex flex-1 w-full min-h-0 px-8 pb-4 overflow-x-auto overflow-y-hidden">
           <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
               <div className="flex h-full gap-6 min-w-max pt-4">
@@ -183,7 +183,7 @@ export default function OrdersBoard () {
           </DndContext>
       </div>
 
-      {/* Mobile FAB */}
+      {/* Mobile FAB (Floating Action Button - Criar Novo Pedido) */}
       <Link href="/loginPage" className="fixed bottom-20 right-4 w-14 h-14 bg-[#ec4913] rounded-full shadow-lg flex items-center justify-center text-white hover:bg-[#d14010] transition-colors z-50 md:hidden">
          <IconPlus size={32} />
       </Link>
