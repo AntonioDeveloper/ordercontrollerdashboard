@@ -2,6 +2,7 @@
 
 import MenuSchema from '../models/menu';
 import { analyzeLocally } from '../services/nutritionLocal';
+import OpenAI from 'openai';
 
 type CartItem = {
   nome_item: string;
@@ -37,13 +38,18 @@ export const analyzeNutrition = async (req: any, res: any) => {
     }
 
     try {
-      const payload = {
+      const client = new OpenAI({
+        apiKey: groqApiKey,
+        baseURL: 'https://api.groq.com/openai/v1',
+      });
+
+      const completion = await client.chat.completions.create({
         model: 'llama-3.3-70b-versatile',
         messages: [
           {
             role: 'system',
             content:
-              'Você é um nutricionista que analisa pedidos de pizza e bebidas para um aplicativo de pizzaria. Responda em português brasileiro, de forma direta, amigável e prática. Adicione dicas práticas de como as pessoas podem diminuir os danos após consumir uma refeição calórica. Responda APENAS com um JSON válido (RFC 8259). Não use markdown. Não inclua texto antes ou depois do JSON. Se precisar usar quebras de linha nas strings, use "\\n" escapado.',
+              'Você é um nutricionista que analisa pedidos de pizza e bebidas para um aplicativo de pizzaria. Responda em português brasileiro, de forma direta, amigável e prática. Adicione dicas práticas de como as pessoas podem diminuir os danos após consumir uma refeição calórica. Responda APENAS com um JSON válido (RFC 8259). Não use markdown. Não inclua texto antes ou depois do JSON.',
           },
           {
             role: 'user',
@@ -64,27 +70,12 @@ export const analyzeNutrition = async (req: any, res: any) => {
               }),
           },
         ],
-        max_tokens: 512,
+        max_tokens: 1024,
         temperature: 0.6,
-      };
+        response_format: { type: 'json_object' },
+      });
 
-      const response = await fetch(
-        'https://api.groq.com/openai/v1/chat/completions',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${groqApiKey}`,
-          },
-          body: JSON.stringify(payload),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`Groq API error: ${response.statusText}`);
-      }
-
-      const groqResponse = await response.text();
+      const groqResponse = completion.choices[0]?.message?.content ?? '';
 
       const aiResult: {
         observacoes?: string;
@@ -94,57 +85,23 @@ export const analyzeNutrition = async (req: any, res: any) => {
 
       try {
         const parsed = JSON.parse(groqResponse);
-        const content = parsed?.choices?.[0]?.message?.content ?? '';
-        if (typeof content === 'string') {
-          try {
-            // Tenta limpar markdown ou extrair apenas o JSON
-            let cleanedContent = content.trim();
-            // Remove blocos de código markdown se existirem
-            if (cleanedContent.includes('```')) {
-              cleanedContent = cleanedContent
-                .replace(/```json/g, '')
-                .replace(/```/g, '');
-            }
 
-            // Usado para garantir que pegamos apenas o objeto JSON
-            const firstBrace = cleanedContent.indexOf('{');
-            const lastBrace = cleanedContent.lastIndexOf('}');
-
-            if (firstBrace !== -1 && lastBrace !== -1) {
-              cleanedContent = cleanedContent.substring(
-                firstBrace,
-                lastBrace + 1,
-              );
-            }
-
-            const ai = JSON.parse(cleanedContent);
-
-            if (typeof ai.observacoes === 'string') {
-              aiResult.observacoes = ai.observacoes;
-            }
-            if (Array.isArray(ai.sugestoes)) {
-              aiResult.sugestoes = ai.sugestoes.filter(
-                (s: unknown) => typeof s === 'string',
-              );
-            }
-            if (Array.isArray(ai.dicas_suavizar)) {
-              aiResult.dicasSuavizar = ai.dicas_suavizar.filter(
-                (s: unknown) => typeof s === 'string',
-              );
-            }
-          } catch (e) {
-            console.warn(
-              '[analyzeNutrition] Conteúdo do Groq não é JSON válido, tentando extração manual:',
-              e,
-            );
-            // Fallback manual para observacoes se o JSON falhar
-            const obsMatch = content.match(
-              /"observacoes"\s*:\s*"((?:[^"\\]|\\.)*)"/,
-            );
-            if (obsMatch && obsMatch[1]) {
-              aiResult.observacoes = obsMatch[1];
-            }
-          }
+        if (typeof parsed.observacoes === 'string') {
+          aiResult.observacoes = parsed.observacoes;
+        }
+        if (Array.isArray(parsed.sugestoes)) {
+          aiResult.sugestoes = parsed.sugestoes.filter(
+            (s: unknown) => typeof s === 'string',
+          );
+        }
+        if (Array.isArray(parsed.dicas_suavizar)) {
+          aiResult.dicasSuavizar = parsed.dicas_suavizar.filter(
+            (s: unknown) => typeof s === 'string',
+          );
+        }
+        // Compatibilidade com chaves snake_case caso o modelo alucine
+        if (Array.isArray(parsed.dicas_suavizar)) {
+          // Já tratado acima, mas mantendo lógica se vier como snake case no futuro
         }
       } catch (e) {
         console.warn(

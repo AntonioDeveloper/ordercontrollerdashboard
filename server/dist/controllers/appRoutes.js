@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const orderController_1 = require("./orderController");
+const clientController_1 = require("./clientController");
+const menuController_1 = require("./menuController");
+const nutritionController_1 = require("./nutritionController");
+const route = express_1.default.Router();
+route.get('/orders', orderController_1.getAllOrders);
+route.get('/clients', clientController_1.getAllClients);
+route.get('/menu', menuController_1.getAllMenu);
+route.put('/clients/update/:id', clientController_1.updateClient);
+route.put('/orders/update/:id', orderController_1.updateOrder);
+route.post('/signUpClient', clientController_1.signUpClient);
+route.post('/createOrder', orderController_1.createOrder);
+route.post('/loginClient', clientController_1.loginClient);
+route.post('/analyzeNutrition', nutritionController_1.analyzeNutrition);
+route.post('/clients/fetchClient', clientController_1.getOneClient);
+exports.default = route;
